@@ -1,0 +1,7 @@
+reddit <- 'www.reddit.com'
+entries = [findall:'a.title'] reddit
+urls = {attr:'href'} entries
+titles = {text} entries
+
+data = dict{'urls':urls, 'titles':titles}
+output = data
