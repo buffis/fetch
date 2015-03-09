@@ -1,2 +1,6 @@
 reddit <- 'www.reddit.com'
-reddit[param] = 'val'
+reddit <- 'www.reddit.com'
+
+reddit[param] = 'fsfs'
+reddit{param} = 'fsfs'
+reddit<param> = 'fsfs'

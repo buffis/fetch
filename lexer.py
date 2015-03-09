@@ -43,6 +43,8 @@ t_RBRACE    = r'\]'
 t_COLON     = r':'
 t_COMMA     = r','
 t_PLUS      = r'\+'
+t_LT        = r'<'
+t_GT        = r'>'
 
 def t_NAME(t):
     r'\w+' 
