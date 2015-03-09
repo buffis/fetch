@@ -5,26 +5,29 @@ reserved = {
 }
 
 tokens = (
-  # Non-trivial tokens.
-  'NAME',
-  'STRING',
+    # Non-trivial tokens.
+    'NAME',
+    'STRING',
 
-  # Trivial tokens.
-  'LARROW',
-  'RARROW',
-  'EQUALS',
-  'LPAREN',
-  'RPAREN',
-  'LBRACKET',
-  'RBRACKET',
-  'LBRACE',
-  'RBRACE',
-  'COLON',
-  'COMMA',
-  'PLUS',
+    # Trivial tokens.
+    'LARROW',
+    'RARROW',
+    'EQUALS',
+    'LPAREN',
+    'RPAREN',
+    'LCURLY',
+    'RCURLY',
+    'LBRACE',
+    'RBRACE',
+    'LT',
+    'GT',
+    'COLON',
+    'COMMA',
+    'PLUS',
+    'NEWLINE',
 
-  # Reserved words.
-  'DICT'
+    # Reserved words.
+    'DICT'
 ) 
 
 # Regular expression rules for simple tokens.
@@ -33,10 +36,10 @@ t_RARROW    = r'->'
 t_EQUALS    = r'='
 t_LPAREN    = r'\('
 t_RPAREN    = r'\)'
-t_LBRACKET  = r'\['
-t_RBRACKET  = r'\]'
-t_LBRACE    = r'\{'
-t_RBRACE    = r'\}'
+t_LCURLY    = r'\{'
+t_RCURLY    = r'\}'
+t_LBRACE    = r'\['
+t_RBRACE    = r'\]'
 t_COLON     = r':'
 t_COMMA     = r','
 t_PLUS      = r'\+'
@@ -53,6 +56,8 @@ def t_STRING(t):
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
+    t.type = "NEWLINE"
+    return t
 
 def t_COMMENT(t):
     r'\#.*'
@@ -67,4 +72,4 @@ def t_error(t):
     t.lexer.skip(1)
 
 def get_lexer():
-  return lex.lex()
+    return lex.lex()
