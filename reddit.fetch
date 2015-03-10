@@ -1,6 +1,11 @@
 reddit <- 'www.reddit.com'
 reddit <- 'www.reddit.com'
-
 reddit[param] = 'fsfs'
 reddit{param} = 'fsfs'
 reddit<param> = 'fsfs'
+x = [starts:'dsadsa'] reddit
+x = {after:'ello'} reddit
+x = [!starts:'dsadsa'] reddit
+x = [!starts:'dsadsa' & after:'ello'] reddit
+x = [!starts:'dsadsa' | after:'ello' & after:'ello'] reddit
+y = {text} reddit

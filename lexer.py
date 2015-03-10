@@ -25,6 +25,9 @@ tokens = (
     'COMMA',
     'PLUS',
     'NEWLINE',
+    'BANG',
+    'OR',
+    'AND',
 
     # Reserved words.
     'DICT'
@@ -45,6 +48,9 @@ t_COMMA     = r','
 t_PLUS      = r'\+'
 t_LT        = r'<'
 t_GT        = r'>'
+t_BANG      = r'!'
+t_OR        = r'\|'
+t_AND       = r'&'
 
 def t_NAME(t):
     r'\w+' 
