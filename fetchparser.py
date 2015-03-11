@@ -28,6 +28,10 @@ def p_fetchline_modify(p):
 def p_fetchline_filter(p):
     """fetchline : filterline"""
     p[0] = p[1]
+
+def p_fetchline_output(p):
+    """fetchline : outputline"""
+    p[0] = p[1]
     
 def p_paramline(p):
     """paramline : NAME LBRACE NAME RBRACE EQUALS STRING NEWLINE"""
@@ -74,9 +78,42 @@ def p_post(p):
     "post : RARROW"
     p[0] = "POST"
 
-def p_empty(p):
-    'empty :'
-    p[0] = None
+def p_outputline(p):
+    """outputline : outputassign"""
+    p[0] = p[1]
+
+def p_outputassign_list(p):
+    """outputassign : NAME EQUALS outputlist NEWLINE"""
+    p[0] = OutputAssignment(p[1], p[3])
+
+def p_outputassign_var(p):
+    """outputassign : NAME EQUALS NAME NEWLINE"""
+    p[0] = OutputAssignment(p[1], p[3])
+
+def p_outputassign_string(p):
+    """outputassign : NAME EQUALS STRING NEWLINE"""
+    p[0] = OutputAssignment(p[1], p[3])
+
+def p_outputassign_arrayitem(p):
+    """outputassign : NAME EQUALS NAME LBRACE NUMBER RBRACE NEWLINE"""
+    p[0] = OutputAssignment(p[1], ListAt(p[3], p[5]))
+
+# TODO: Consider generalizing the right expression
+def p_outputassign_plusexp(p):
+    """outputassign : NAME EQUALS NAME PLUS NAME NEWLINE"""
+    p[0] = OutputAssignment(p[1], ListPlus(p[3], p[5]))
+
+def p_outputlist(p):
+    """outputlist : LBRACE outputlistitems RBRACE"""
+    p[0] = p[2]
+
+def p_outputlistitems_single(p):
+    """outputlistitems : STRING"""
+    p[0] = [p[1]]
+    
+def p_outputlistitems_multiple(p):
+    """outputlistitems : STRING COMMA outputlistitems"""
+    p[0] = [p[1]] + p[3]
 
 def p_error(p):
     print "Syntax error in input!"
@@ -87,6 +124,27 @@ def parse_input(i):
     lexer = lexer.get_lexer()
     result = parser.parse(i, lexer=lexer)
     return result
+
+class ListPlus(object):
+    def __init__(self, l1, l2):
+        self.l1 = l1
+        self.l2 = l2
+    def __str__(self):
+        return "%s+%s" % (str(self.l1), str(self.l2))
+
+class ListAt(object):
+    def __init__(self, l, at):
+        self.l = l
+        self.at = at
+    def __str__(self):
+        return "%s[%s]" % (str(self.l), str(self.at))
+
+class OutputAssignment(object):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+    def __str__(self):
+        return "Assignment: " + self.name + " = " + str(self.value)
 
 class FilterExpression(object):
     pass

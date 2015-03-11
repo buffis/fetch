@@ -8,6 +8,7 @@ tokens = (
     # Non-trivial tokens.
     'NAME',
     'STRING',
+    'NUMBER',
 
     # Trivial tokens.
     'LARROW',
@@ -53,13 +54,18 @@ t_OR        = r'\|'
 t_AND       = r'&'
 
 def t_NAME(t):
-    r'\w+' 
+    r'[a-zA-Z]+' 
     t.type = reserved.get(t.value,'NAME')
     return t
 
 def t_STRING(t):
     r"'[^']*'"
     return t
+
+def t_NUMBER(t):
+    r'\d+'
+    return t
+
 
 def t_newline(t):
     r'\n+'
