@@ -103,6 +103,10 @@ def p_outputassign_plusexp(p):
     """outputassign : NAME EQUALS NAME PLUS NAME NEWLINE"""
     p[0] = OutputAssignment(p[1], ListPlus(p[3], p[5]))
 
+def p_outputassign_dict(p):
+    """outputassign : NAME EQUALS outputdict NEWLINE"""
+    p[0] = OutputAssignment(p[1], p[3])
+
 def p_outputlist(p):
     """outputlist : LBRACE outputlistitems RBRACE"""
     p[0] = p[2]
@@ -114,6 +118,20 @@ def p_outputlistitems_single(p):
 def p_outputlistitems_multiple(p):
     """outputlistitems : STRING COMMA outputlistitems"""
     p[0] = [p[1]] + p[3]
+
+def p_outputdict(p):
+    """outputdict : DICT LCURLY outputdictitems RCURLY"""
+    p[0] = p[3]
+
+def p_outputdictitems_single(p):
+    """outputdictitems : STRING COLON NAME"""
+    p[0] = {p[1]: p[3]}
+    
+def p_outputdictitems_multiple(p):
+    """outputdictitems : STRING COLON NAME COMMA outputdictitems"""
+    d = p[5]
+    d[p[1]] = p[3]
+    p[0] = d
 
 def p_error(p):
     print "Syntax error in input!"
