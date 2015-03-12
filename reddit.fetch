@@ -1,8 +1,8 @@
 reddit <- 'www.reddit.com'
-reddit <- 'www.reddit.com'
-reddit[param] = 'fsfs'
-reddit{param} = 'fsfs'
-reddit<param> = 'fsfs'
+other <- 'www.google.com'
+reddit[abc] = 'fsfs'
+reddit{dsa} = 'fsfs'
+reddit<WOW> = 'fsfs'
 x = [starts:'dsadsa'] reddit
 x = {after:'ello'} reddit
 x = [!starts:'dsadsa'] reddit

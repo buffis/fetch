@@ -17,7 +17,20 @@ def print_lexed():
         if not tok: break      # No more input
         print tok
 
+def print_compiled():
+    import pycompiler
+    compiled = fetchparser.parse_input(open("reddit.fetch").read())
+    pycompiler.compile_deps()
+
+    for line in compiled:
+        pycompiler.compile_line(line)
+
+
+
 print "\n--Lexed--"
 print_lexed()
 print "\n--Parsed--"
 print_parsed()
+print "\n--Compiled--"
+print_compiled()
+
