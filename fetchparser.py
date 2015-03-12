@@ -107,6 +107,10 @@ def p_outputassign_dict(p):
     """outputassign : NAME EQUALS outputdict NEWLINE"""
     p[0] = OutputAssignment(p[1], p[3])
 
+def p_outputassign_dictkey(p):
+    """outputassign : NAME LBRACE STRING RBRACE EQUALS NAME NEWLINE"""
+    p[0] = OutputAssignment(DictAt(p[1], p[3]), p[6])
+
 def p_outputlist(p):
     """outputlist : LBRACE outputlistitems RBRACE"""
     p[0] = p[2]
@@ -150,6 +154,13 @@ class ListPlus(object):
     def __str__(self):
         return "%s+%s" % (str(self.l1), str(self.l2))
 
+class DictAt(object):
+    def __init__(self, d, at):
+        self.d = d
+        self.at = at
+    def __str__(self):
+        return "%s[%s]" % (str(self.d), str(self.at))
+    
 class ListAt(object):
     def __init__(self, l, at):
         self.l = l
@@ -162,7 +173,7 @@ class OutputAssignment(object):
         self.name = name
         self.value = value
     def __str__(self):
-        return "Assignment: " + self.name + " = " + str(self.value)
+        return "Assignment: " + str(self.name) + " = " + str(self.value)
 
 class FilterExpression(object):
     pass
