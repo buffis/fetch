@@ -1,7 +1,7 @@
 import ply.yacc as yacc
 
 # Get the token map from the lexer.  This is required.
-from lexer import tokens
+from fetchlexer import tokens
 
 def p_fetchsection(p):
     """fetchsection : fetchlines"""
@@ -141,9 +141,9 @@ def p_error(p):
     print "Syntax error in input!"
 
 def parse_input(i):
-    import lexer
+    import fetchlexer
     parser = yacc.yacc()
-    lexer = lexer.get_lexer()
+    lexer = fetchlexer.get_lexer()
     result = parser.parse(i, lexer=lexer)
     return result
 
@@ -208,7 +208,7 @@ class FilterAction(object):
         self.expression = expression
         self.indata = indata
     def __str__(self):
-        return str(type(self)) + self.name + str(self.expression) + self.indata
+        return "Filter: " + str(type(self)) + self.name + str(self.expression) + self.indata
     def __repr__(self):
         return str(self)
 

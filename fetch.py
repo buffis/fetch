@@ -5,8 +5,8 @@ def print_parsed():
         print line
 
 def print_lexed():
-    import lexer
-    l=lexer.get_lexer()
+    import fetchlexer
+    l=fetchlexer.get_lexer()
 
     # Give the lexer some input
     l.input(open("reddit.fetch").read())
