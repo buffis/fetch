@@ -59,7 +59,12 @@ def compile_modifyurlaction(action):
 def compile_starts_filter(arg): return "x.startswith(%s)" % arg
 def compile_ends_filter(arg): return "x.endswith(%s)" % arg
 def compile_contains_filter(arg): return "x.contains(%s)" % arg
-    
+
+def compile_after_filter(arg):
+    return "x[x.find(%s)+%d:] if %s in x else ''" % (arg, len(arg)-2, arg)
+
+def compile_text_filter(arg):
+    return "x"
 
 def compile_filter_expression(exp, filter_map):
     t = type(exp)
@@ -89,6 +94,14 @@ def compile_coarsefilteraction(action):
     print "lambda x: " + compile_filter_expression(action.expression,
                                                    coarse_filter_map)
 
+def compile_finefilteraction(action):
+    fine_filter_map = {
+        "after" : compile_after_filter,
+        "text" : compile_text_filter,
+    }
+    print "lambda x: " + compile_filter_expression(action.expression,
+                                                   fine_filter_map)
+
 ##################### END FILTER SECTION #######################
     
 def compile_line(line):
@@ -96,5 +109,6 @@ def compile_line(line):
         FetchAction : compile_fetchaction,
         ModifyUrlAction : compile_modifyurlaction,
         CoarseFilterAction : compile_coarsefilteraction,
+        FineFilterAction : compile_finefilteraction,
     }
     compile_map[type(line)](line)
