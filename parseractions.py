@@ -59,7 +59,7 @@ class BasicFilterExpression(FilterExpression):
         if self.arg:
             r += ":" + self.arg
         return r + ">"
-
+    
 class FilterAction(object):
     def __init__(self, name, expression, indata):
         self.name = name

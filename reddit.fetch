@@ -1,13 +1,13 @@
-reddit <- 'www.reddit.com'
-other <- 'www.google.com'
+reddit <- 'http://www.reddit.com'
+other <- 'http://www.google.com'
 reddit[abc] = 'fsfs'
 reddit{dsa} = 'fsfs'
 reddit<WOW> = 'fsfs'
 x = [starts:'dsadsa'] reddit
-x = {after:'ello'} reddit
 x = [!starts:'dsadsa'] reddit
-x = [!starts:'dsadsa' & after:'ello'] reddit
-x = [!starts:'dsadsa' | after:'ello' & after:'ello'] reddit
+x = [!starts:'dsadsa' & ends:'ello'] reddit
+x = [!starts:'dsadsa' | ends:'ello' & ends:'ello'] reddit
+x = {after:'ello'} reddit
 y = {text} reddit
 zds = ['stuff']
 zds = ['stuff', 'moar']

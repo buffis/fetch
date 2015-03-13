@@ -26,7 +26,6 @@ def print_compiled():
         pycompiler.compile_line(line)
 
 
-
 print "\n--Lexed--"
 print_lexed()
 print "\n--Parsed--"
