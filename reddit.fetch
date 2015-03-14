@@ -1,20 +1,5 @@
-reddit <- 'http://www.reddit.com'
-other <- 'http://www.google.com'
+reddit <- 'http://stackoverflow.com/questions/8221296/how-can-i-download-and-read-a-url-with-universal-newlines'
 reddit[abc] = 'fsfs'
 reddit{dsa} = 'fsfs'
 reddit<WOW> = 'fsfs'
-x = [starts:'dsadsa'] reddit
-x = [!starts:'dsadsa'] reddit
-x = [!starts:'dsadsa' & ends:'ello'] reddit
-x = [!starts:'dsadsa' | ends:'ello' & ends:'ello'] reddit
-x = {after:'ello'} reddit
-y = {text} reddit
-zds = ['stuff']
-zds = ['stuff', 'moar']
-zds = ['stuff', 'sds', 'dsdsa']
-fds = 'dsadasd'
-dsadsa = dsad
-dsad = dsa[3]
-output = x+y
-o = dict{'titles':titles, 'other':other}
-psda['dsadsa'] = d
+x = [starts:'<html'] other

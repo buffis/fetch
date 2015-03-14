@@ -1,14 +1,13 @@
 from parseractions import *
 
 def compile_deps():
-    print "import requests"
-    print """
+    return """import requests
 class TextWrapper(object):
     def __init__(self, lines):
         self.lines = lines
 
-    def apply_filter(self, exp):
-        pass
+    def filter(self, exp):
+        return TextWrapper(filter(exp, self.lines))
 
 class UrlWrapper(object):
     def __init__(self, method, url):
@@ -29,16 +28,17 @@ class UrlWrapper(object):
              return
         self.text_wrapper = TextWrapper(req.text.split('\\n'))
 
-    def apply_filter(self, exp):
+    def filter(self, exp):
         if not self.text_wrapper:
             self.do_request()
-        wrapper = self.text_wrapper:
+        return self.text_wrapper.filter(exp)
+        
 """
 
 ######################## FETCH SECTION ######################## 
 
 def compile_fetchaction(action):
-    print "%s = UrlWrapper('%s', %s)" % (
+    return "%s = UrlWrapper('%s', %s)" % (
         action.name, action.method, action.url)
 
 def compile_modifyurlaction(action):
@@ -49,7 +49,7 @@ def compile_modifyurlaction(action):
     field = field_map.get(action.method, None)
     if field is None:
         raise SyntaxError("Invalid field: " + action.method)
-    print "%s.%s['%s'] = %s" % (action.name, field, action.key, action.value)
+    return "%s.%s['%s'] = %s" % (action.name, field, action.key, action.value)
     
 ###################### END FETCH SECTION ###################### 
 
@@ -75,12 +75,12 @@ def compile_filter_expression(exp, filter_map):
                                                       filter_map)
     if t == CombinedFilterExpression:
         if exp.op == "&":
-            return "(%s) AND (%s)" % (compile_filter_expression(exp.exp1,
+            return "(%s) and (%s)" % (compile_filter_expression(exp.exp1,
                                                                 filter_map),
                                       compile_filter_expression(exp.exp2,
                                                                 filter_map))
         if exp.op == "|":
-            return "(%s) OR (%s)" % (compile_filter_expression(exp.exp1,
+            return "(%s) or (%s)" % (compile_filter_expression(exp.exp1,
                                                                filter_map),
                                       compile_filter_expression(exp.exp2,
                                                                 filter_map))
@@ -91,16 +91,17 @@ def compile_coarsefilteraction(action):
         "ends" : compile_ends_filter,
         "contains" : compile_contains_filter,
     }
-    print "lambda x: " + compile_filter_expression(action.expression,
+    exp = "lambda x: " + compile_filter_expression(action.expression,
                                                    coarse_filter_map)
+    return "%s = %s.filter(%s)" % (action.name, action.indata, exp)
 
 def compile_finefilteraction(action):
     fine_filter_map = {
         "after" : compile_after_filter,
         "text" : compile_text_filter,
     }
-    print "lambda x: " + compile_filter_expression(action.expression,
-                                                   fine_filter_map)
+    return "lambda x: " + compile_filter_expression(action.expression,
+                                                    fine_filter_map)
 
 ##################### END FILTER SECTION #######################
     
@@ -111,4 +112,4 @@ def compile_line(line):
         CoarseFilterAction : compile_coarsefilteraction,
         FineFilterAction : compile_finefilteraction,
     }
-    compile_map[type(line)](line)
+    return compile_map[type(line)](line) + "\n"

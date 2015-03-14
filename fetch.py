@@ -20,10 +20,16 @@ def print_lexed():
 def print_compiled():
     import pycompiler
     compiled = fetchparser.parse_input(open("reddit.fetch").read())
-    pycompiler.compile_deps()
-
+    
+    data = ""
+    data += pycompiler.compile_deps()
     for line in compiled:
-        pycompiler.compile_line(line)
+        data += pycompiler.compile_line(line)
+
+    # Write Python code to a file
+    f=open("fetchout.py","w")
+    f.write(data)
+    f.close()
 
 
 print "\n--Lexed--"
