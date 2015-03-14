@@ -58,3 +58,7 @@ target/
 # PLY
 parser.out
 parsetab.py
+
+# Stuff
+test.py
+fetchout.py

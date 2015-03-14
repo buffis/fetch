@@ -26,6 +26,7 @@ def print_compiled():
     for line in compiled:
         data += pycompiler.compile_line(line)
 
+    print data
     # Write Python code to a file
     f=open("fetchout.py","w")
     f.write(data)

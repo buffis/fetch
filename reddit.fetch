@@ -1,5 +1,6 @@
-reddit <- 'http://stackoverflow.com/questions/8221296/how-can-i-download-and-read-a-url-with-universal-newlines'
-reddit[abc] = 'fsfs'
-reddit{dsa} = 'fsfs'
-reddit<WOW> = 'fsfs'
+other <- 'http://stackoverflow.com/questions/8221296/how-can-i-download-and-read-a-url-with-universal-newlines'
+other[abc] = 'fsfs'
+other{dsa} = 'fsfs'
+other<WOW> = 'fsfs'
 x = [starts:'<html'] other
+x = {after:'itemtype'} x

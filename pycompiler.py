@@ -9,6 +9,9 @@ class TextWrapper(object):
     def filter(self, exp):
         return TextWrapper(filter(exp, self.lines))
 
+    def map(self, exp):
+        return TextWrapper(map(exp, self.lines))
+
 class UrlWrapper(object):
     def __init__(self, method, url):
         self.method = method
@@ -32,7 +35,11 @@ class UrlWrapper(object):
         if not self.text_wrapper:
             self.do_request()
         return self.text_wrapper.filter(exp)
-        
+
+    def map(self, exp):
+        if not self.text_wrapper:
+            self.do_request()
+        return self.text_wrapper.map(exp)
 """
 
 ######################## FETCH SECTION ######################## 
@@ -100,8 +107,9 @@ def compile_finefilteraction(action):
         "after" : compile_after_filter,
         "text" : compile_text_filter,
     }
-    return "lambda x: " + compile_filter_expression(action.expression,
-                                                    fine_filter_map)
+    exp = "lambda x: " + compile_filter_expression(action.expression,
+                                                   fine_filter_map)
+    return "%s = %s.map(%s)" % (action.name, action.indata, exp)
 
 ##################### END FILTER SECTION #######################
     
