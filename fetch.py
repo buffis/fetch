@@ -1,7 +1,7 @@
 import fetchparser
 
 def print_parsed():
-    for line in fetchparser.parse_input(open("reddit.fetch").read()):
+    for line in fetchparser.parse_input(open("sample.fetch").read()):
         print line
 
 def print_lexed():
@@ -19,7 +19,7 @@ def print_lexed():
 
 def print_compiled():
     import pycompiler
-    compiled = fetchparser.parse_input(open("reddit.fetch").read())
+    compiled = fetchparser.parse_input(open("sample.fetch").read())
     
     data = ""
     data += pycompiler.compile_deps()
