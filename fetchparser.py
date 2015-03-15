@@ -29,7 +29,8 @@ def p_fetchline_modify(p):
 
 def p_error(p):
     "Error in syntax"
-    print "Syntax error in input!"
+    print "Error parsing expression: %s at line %d" % (p.value, p.lineno)
+    raise SyntaxError()
 
 
 ############
@@ -162,6 +163,7 @@ def parse_input(i):
 ##########
 
 if __name__ == "__main__":
+    # TODO: Maybe clean this up.
     def fl(l,p):
         if ":" in l:
             before,after = l.split(":")
@@ -173,6 +175,6 @@ if __name__ == "__main__":
     g = globals().copy()
     rules = [(n,f) for (n,f) in g.items() if n.startswith("p_")]
     for (n,f) in rules:
-        if (f.__doc__.strip()):
+        if (f.__doc__.strip() and ":" in f.__doc__):
             print fl(f.__doc__, 18)
 

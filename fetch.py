@@ -33,11 +33,22 @@ def print_compiled():
     f.write(data)
     f.close()
 
+def execute_compiled():
+    execfile("fetchout.py")
 
-print "\n--Lexed--"
-print_lexed()
-print "\n--Parsed--"
-print_parsed()
-print "\n--Compiled--"
-print_compiled()
+if __name__ == "__main__":
+    print "\n--Lexed--"
+    print_lexed()
 
+    print "\n--Parsed--"
+    try:
+        print_parsed()
+    except SyntaxError:
+        print "Terminating"
+        import sys
+        sys.exit(1)
+        
+    print "\n--Compiled--"
+    print_compiled()
+    print "\n--Executing--"
+    execfile("fetchout.py")

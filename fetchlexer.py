@@ -14,8 +14,6 @@ tokens = (
     'LARROW',
     'RARROW',
     'EQUALS',
-    'LPAREN',
-    'RPAREN',
     'LCURLY',
     'RCURLY',
     'LBRACE',
@@ -38,8 +36,6 @@ tokens = (
 t_LARROW    = r'<-'
 t_RARROW    = r'->'
 t_EQUALS    = r'='
-t_LPAREN    = r'\('
-t_RPAREN    = r'\)'
 t_LCURLY    = r'\{'
 t_RCURLY    = r'\}'
 t_LBRACE    = r'\['
@@ -54,7 +50,7 @@ t_OR        = r'\|'
 t_AND       = r'&'
 
 def t_NAME(t):
-    r'[a-zA-Z]+' 
+    r'[a-zA-Z\-_]+' 
     t.type = reserved.get(t.value,'NAME')
     return t
 
@@ -66,7 +62,6 @@ def t_NUMBER(t):
     r'\d+'
     return t
 
-
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
@@ -77,10 +72,8 @@ def t_COMMENT(t):
     r'\#.*'
     pass
 
-# Ignored characters.
 t_ignore  = ' \t'
 
-# Error handling rule.
 def t_error(t):
     print "Illegal character '%s'" % t.value[0]
     t.lexer.skip(1)

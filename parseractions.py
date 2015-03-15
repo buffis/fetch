@@ -2,9 +2,6 @@
 Actions representing nodes in the parse tree.
 """
 
-class ParserAction(object):
-    pass
-
 class ListPlus(object):
     def __init__(self, l1, l2):
         self.l1 = l1
@@ -67,8 +64,6 @@ class FilterAction(object):
         self.indata = indata
     def __str__(self):
         return "Filter: " + str(type(self)) + self.name + str(self.expression) + self.indata
-    def __repr__(self):
-        return str(self)
 
 class CoarseFilterAction(FilterAction):
     pass
@@ -76,7 +71,7 @@ class CoarseFilterAction(FilterAction):
 class FineFilterAction(FilterAction):
     pass
 
-class FetchAction(ParserAction):
+class FetchAction(object):
     def __init__(self, name, method, url):
         self.name = name
         self.method = method
@@ -90,9 +85,5 @@ class ModifyUrlAction(object):
         self.method = method
         self.key = key
         self.value = value
-
-    def __repr__(self):
-        return str(self)
-
     def __str__(self):
         return "ModifyUrlAction: " + self.name + self.method + self.key + self.value

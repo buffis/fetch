@@ -1,5 +1,5 @@
-other <- 'http://stackoverflow.com/questions/8221296/how-can-i-download-and-read-a-url-with-universal-newlines'
-other[abc] = 'fsfs'
+other <- 'http://stackoverflow.com/questions/8221296/how-can-i-download-and-read-a-url-with-universal-newlines'   # GET
+other[a_b-c] = 'fsfs'
 other{dsa} = 'fsfs'
 other<WOW> = 'fsfs'
 x = [starts:'<html'] other
@@ -8,6 +8,6 @@ y = {after:'itemtype'} x
 output = x[0]
 output = x
 output = x+y
-output['data'] = x
-output['otherdata'] = y
-output = dict{'titles':titles, 'other':other}
+out = dict{'titles':x, 'other':xx}
+out['data'] = x
+out['otherdata'] = y
