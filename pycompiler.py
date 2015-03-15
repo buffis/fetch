@@ -69,9 +69,11 @@ def compile_modifyurlaction(action):
 
 ####################### FILTER SECTION ########################
 
+# TODO: Enforce validation?
 def compile_starts_filter(arg): return "x.startswith(%s)" % arg
 def compile_ends_filter(arg): return "x.endswith(%s)" % arg
-def compile_contains_filter(arg): return "x.contains(%s)" % arg
+def compile_contains_filter(arg): return "%s in x" % arg
+def compile_length_filter(arg): return "len(x) %s" % arg 
 
 def compile_after_filter(arg):
     return "x[x.find(%s)+%d:] if %s in x else ''" % (arg, len(arg)-2, arg)
@@ -103,6 +105,7 @@ def compile_coarsefilteraction(action):
         "starts" : compile_starts_filter,
         "ends" : compile_ends_filter,
         "contains" : compile_contains_filter,
+        "length" : compile_length_filter,
     }
     exp = "lambda x: " + compile_filter_expression(action.expression,
                                                    coarse_filter_map)
