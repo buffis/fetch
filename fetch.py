@@ -9,7 +9,7 @@ def print_lexed():
     l=fetchlexer.get_lexer()
 
     # Give the lexer some input
-    l.input(open("reddit.fetch").read())
+    l.input(open("sample.fetch").read())
 
     # Tokenize
     while True:

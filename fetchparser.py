@@ -1,13 +1,16 @@
 import ply.yacc as yacc
 
-# Get the token map from the lexer.  This is required.
 from fetchlexer import tokens
 from parseractions import *
 
+############
+# Main rules
+##########
+
 def p_fetchsection(p):
-    """fetchsection : fetchlines"""
+    """fetchcode : fetchlines"""
     p[0] = p[1]
-        
+
 def p_fetchlines(p):
     """fetchlines : fetchline fetchlines
                   | fetchline"""
@@ -15,24 +18,36 @@ def p_fetchlines(p):
     if len(p) > 2:
         p[0] += p[2]
 
-def p_fetchline_fetch(p):
-    """fetchline : NAME get  STRING NEWLINE
-                 | NAME post STRING NEWLINE"""
-    p[0] = FetchAction(p[1], p[2], p[3])
-
 def p_fetchline_modify(p):
-    """fetchline : paramline
+    """fetchline : requestline
+                 | paramline
                  | headerline
-                 | cookieline"""
+                 | cookieline
+                 | filterline
+                 | outputline"""
     p[0] = p[1]
 
-def p_fetchline_filter(p):
-    """fetchline : filterline"""
-    p[0] = p[1]
+def p_error(p):
+    "Error in syntax"
+    print "Syntax error in input!"
 
-def p_fetchline_output(p):
-    """fetchline : outputline"""
-    p[0] = p[1]
+
+############
+# URL section
+##########
+
+def p_get(p):
+    "get : LARROW"
+    p[0] = "GET"
+
+def p_post(p):
+    "post : RARROW"
+    p[0] = "POST"
+
+def p_fetchline_fetch(p):
+    """requestline : NAME get  STRING NEWLINE
+                   | NAME post STRING NEWLINE"""
+    p[0] = FetchAction(p[1], p[2], p[3])
     
 def p_paramline(p):
     """paramline : NAME LBRACE NAME RBRACE EQUALS STRING NEWLINE"""
@@ -45,6 +60,11 @@ def p_headerline(p):
 def p_cookieline(p):
     """cookieline : NAME LT NAME GT EQUALS STRING NEWLINE"""
     p[0] = ModifyUrlAction(p[1], "COOKIE", p[3], p[6])
+
+
+############
+# Filter section
+##########
 
 def p_filterline_coarse(p):
     """filterline : NAME EQUALS LBRACE filterexpression RBRACE NAME NEWLINE"""
@@ -71,14 +91,11 @@ def p_filterexpression_combined(p):
                         | filterexpression OR filterexpression"""
     p[0] = CombinedFilterExpression(p[1],p[3],p[2])
 
-def p_get(p):
-    "get : LARROW"
-    p[0] = "GET"
 
-def p_post(p):
-    "post : RARROW"
-    p[0] = "POST"
-    
+############
+# Output section
+##########
+
 def p_outputline(p):
     """outputline : NAME EQUALS outputright NEWLINE"""
     p[0] = OutputAssignment(p[1], p[3])
@@ -97,14 +114,14 @@ def p_outputright_arrayitem(p):
     """outputright : NAME LBRACE NUMBER RBRACE"""
     p[0] = ListAt(p[1], p[3])
 
-def p_outputright_list(p):
-    """outputright : LBRACE outputlistitems RBRACE"""
-    p[0] = p[2]
-    
 def p_outputright_expression(p):
     """outputright : NAME PLUS NAME"""
     p[0] = ListPlus(p[1], p[3])
 
+def p_outputright_list(p):
+    """outputright : LBRACE outputlistitems RBRACE"""
+    p[0] = p[2]
+    
 def p_outputlistitems_single(p):
     """outputlistitems : STRING"""
     p[0] = [p[1]]
@@ -127,8 +144,10 @@ def p_outputdictitems_multiple(p):
     d[p[1]] = p[3]
     p[0] = d
 
-def p_error(p):
-    print "Syntax error in input!"
+
+############
+# API
+##########
 
 def parse_input(i):
     import fetchlexer
@@ -136,4 +155,24 @@ def parse_input(i):
     lexer = fetchlexer.get_lexer()
     result = parser.parse(i, lexer=lexer)
     return result
+
+
+############
+# Print parser rules
+##########
+
+if __name__ == "__main__":
+    def fl(l,p):
+        if ":" in l:
+            before,after = l.split(":")
+            t = p-len(before)
+            l = before + " "*t + ":" + after
+        return ("\n" +(" "*p)).join([x.strip() for x in l.split("\n")])
+
+    print "Grammar:"
+    g = globals().copy()
+    rules = [(n,f) for (n,f) in g.items() if n.startswith("p_")]
+    for (n,f) in rules:
+        if (f.__doc__.strip()):
+            print fl(f.__doc__, 18)
 
