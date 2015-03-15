@@ -34,7 +34,7 @@ def p_error(p):
 
 
 ############
-# URL section
+# Fetch section
 ##########
 
 def p_get(p):
@@ -163,18 +163,29 @@ def parse_input(i):
 ##########
 
 if __name__ == "__main__":
-    # TODO: Maybe clean this up.
+    # TODO: Compare lists below with global function starting with "p_"
+    rules = [
+        ("Main parsing",   [p_fetchsection, p_fetchlines, p_fetchline_modify]),
+        ("Fetch section",  [p_fetchline_fetch, p_paramline, p_headerline, p_cookieline, p_get, p_post]),
+        ("Filter section", [p_filterline_coarse, p_filterline_fine, p_filterexpression,
+                           p_filterexpression_noarg, p_filterexpression_neg, p_filterexpression_combined]),
+        ("Output section", [p_outputline, p_outputline_dict, p_outputright, p_outputright_arrayitem,
+                           p_outputright_expression, p_outputright_list, p_outputlistitems_single,
+                           p_outputlistitems_multiple, p_outputdict, p_outputdictitems_single,
+                           p_outputdictitems_multiple])]
+    
     def fl(l,p):
+        # TODO: Clean this up.
         if ":" in l:
             before,after = l.split(":")
             t = p-len(before)
             l = before + " "*t + ":" + after
         return ("\n" +(" "*p)).join([x.strip() for x in l.split("\n")])
 
-    print "Grammar:"
-    g = globals().copy()
-    rules = [(n,f) for (n,f) in g.items() if n.startswith("p_")]
-    for (n,f) in rules:
-        if (f.__doc__.strip() and ":" in f.__doc__):
-            print fl(f.__doc__, 18)
-
+    print "Fetch context-free grammar:"
+    for section,rules in rules:
+        print section + ":"
+        for rule in rules:
+            print fl(rule.__doc__, 18)
+        print ""
+    
