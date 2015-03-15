@@ -122,7 +122,7 @@ def compile_finefilteraction(action):
 ####################### OUTPUT SECTION #########################
 
 def compile_outputassignment(action):
-    return action.name + "=" + compile_outputassignment_right(action.value)
+    return str(action.name) + "=" + compile_outputassignment_right(action.value)
 
 def compile_outputassignment_right(value):
     if (type(value) == ListPlus):
@@ -130,7 +130,10 @@ def compile_outputassignment_right(value):
                             compile_outputassignment_right(value.l2))
     if (type(value) == ListAt):
         return "%s.output()[%s]" % (value.l, value.at)
-    if type(value == str):
+    if type(value)== dict:
+        # TODO: Clean up.
+        return "{" + ", ".join(["%s : %s.output()" % (x,y) for (x,y) in value.items()]) + "}"
+    if type(value) == str:
         return "%s.output()" % value
 
 ##################### END OUTPUT SECTION #######################
