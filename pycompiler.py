@@ -12,6 +12,9 @@ class TextWrapper(object):
     def map(self, exp):
         return TextWrapper(map(exp, self.lines))
 
+    def output(self):
+        return self.lines
+
 class UrlWrapper(object):
     def __init__(self, method, url):
         self.method = method
@@ -41,6 +44,9 @@ class UrlWrapper(object):
             self.do_request()
         return self.text_wrapper.map(exp)
 """
+
+def compile_finish():
+    return "print out"
 
 ######################## FETCH SECTION ######################## 
 
@@ -113,11 +119,28 @@ def compile_finefilteraction(action):
 
 ##################### END FILTER SECTION #######################
     
+####################### OUTPUT SECTION #########################
+
+def compile_outputassignment(action):
+    return action.name + "=" + compile_outputassignment_right(action.value)
+
+def compile_outputassignment_right(value):
+    if (type(value) == ListPlus):
+        return "%s + %s" % (compile_outputassignment_right(value.l1),
+                            compile_outputassignment_right(value.l2))
+    if (type(value) == ListAt):
+        return "%s.output()[%s]" % (value.l, value.at)
+    if type(value == str):
+        return "%s.output()" % value
+
+##################### END OUTPUT SECTION #######################
+
 def compile_line(line):
     compile_map = {
         FetchAction : compile_fetchaction,
         ModifyUrlAction : compile_modifyurlaction,
         CoarseFilterAction : compile_coarsefilteraction,
         FineFilterAction : compile_finefilteraction,
+        OutputAssignment : compile_outputassignment
     }
     return compile_map[type(line)](line) + "\n"

@@ -10,7 +10,7 @@ class ListPlus(object):
         self.l1 = l1
         self.l2 = l2
     def __str__(self):
-        return "%s+%s" % (str(self.l1), str(self.l2))
+        return "%s + %s" % (str(self.l1), str(self.l2))
 
 class DictAt(object):
     def __init__(self, d, at):

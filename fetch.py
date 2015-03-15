@@ -25,6 +25,7 @@ def print_compiled():
     data += pycompiler.compile_deps()
     for line in compiled:
         data += pycompiler.compile_line(line)
+    data += pycompiler.compile_finish()
 
     print data
     # Write Python code to a file
