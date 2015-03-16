@@ -182,7 +182,7 @@ if __name__ == "__main__":
             l = before + " "*t + ":" + after
         return ("\n" +(" "*p)).join([x.strip() for x in l.split("\n")])
 
-    print "Fetch context-free grammar:"
+    print "Fetch context-free grammar:\n"
     for section,rules in rules:
         print section + ":"
         for rule in rules:

@@ -1,0 +1,45 @@
+Fetch context-free grammar:
+
+Main parsing:
+fetchcode         : fetchlines
+fetchlines        : fetchline fetchlines
+                  | fetchline
+fetchline         : requestline
+                  | paramline
+                  | headerline
+                  | cookieline
+                  | filterline
+                  | outputline
+
+Fetch section:
+requestline       : NAME get  STRING NEWLINE
+                  | NAME post STRING NEWLINE
+paramline         : NAME LBRACE NAME RBRACE EQUALS STRING NEWLINE
+headerline        : NAME LCURLY NAME RCURLY EQUALS STRING NEWLINE
+cookieline        : NAME LT NAME GT EQUALS STRING NEWLINE
+get               : LARROW
+post              : RARROW
+
+Filter section:
+filterline        : NAME EQUALS LBRACE filterexpression RBRACE NAME NEWLINE
+filterline        : NAME EQUALS LCURLY filterexpression RCURLY NAME NEWLINE
+filterexpression  : NAME COLON STRING
+filterexpression  : NAME
+filterexpression  : BANG filterexpression
+filterexpression  : filterexpression AND filterexpression
+                  | filterexpression OR filterexpression
+
+Output section:
+outputline        : NAME EQUALS outputright NEWLINE
+outputline        : NAME LBRACE STRING RBRACE EQUALS outputright NEWLINE
+outputright       : NAME
+                  | STRING
+                  | outputdict
+outputright       : NAME LBRACE NUMBER RBRACE
+outputright       : NAME PLUS NAME
+outputright       : LBRACE outputlistitems RBRACE
+outputlistitems   : STRING
+outputlistitems   : STRING COMMA outputlistitems
+outputdict        : DICT LCURLY outputdictitems RCURLY
+outputdictitems   : STRING COLON NAME
+outputdictitems   : STRING COLON NAME COMMA outputdictitems
