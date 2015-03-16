@@ -22,24 +22,24 @@ post              : RARROW
 
 Filter section:
 filterline        : NAME EQUALS LBRACE filterexpression RBRACE NAME NEWLINE
-filterline        : NAME EQUALS LCURLY filterexpression RCURLY NAME NEWLINE
+                  | NAME EQUALS LCURLY filterexpression RCURLY NAME NEWLINE
 filterexpression  : NAME COLON STRING
-filterexpression  : NAME
-filterexpression  : BANG filterexpression
-filterexpression  : filterexpression AND filterexpression
+                  | NAME
+                  | BANG filterexpression
+                  | filterexpression AND filterexpression
                   | filterexpression OR filterexpression
 
 Output section:
 outputline        : NAME EQUALS outputright NEWLINE
-outputline        : NAME LBRACE STRING RBRACE EQUALS outputright NEWLINE
+                  | NAME LBRACE STRING RBRACE EQUALS outputright NEWLINE
 outputright       : NAME
                   | STRING
                   | outputdict
-outputright       : NAME LBRACE NUMBER RBRACE
-outputright       : NAME PLUS NAME
-outputright       : LBRACE outputlistitems RBRACE
+                  | NAME LBRACE NUMBER RBRACE
+                  | NAME PLUS NAME
+                  | LBRACE outputlistitems RBRACE
 outputlistitems   : STRING
-outputlistitems   : STRING COMMA outputlistitems
+                  | STRING COMMA outputlistitems
 outputdict        : DICT LCURLY outputdictitems RCURLY
 outputdictitems   : STRING COLON NAME
-outputdictitems   : STRING COLON NAME COMMA outputdictitems
+                  | STRING COLON NAME COMMA outputdictitems

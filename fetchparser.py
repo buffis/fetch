@@ -138,7 +138,7 @@ def p_outputdict(p):
 def p_outputdictitems_single(p):
     """outputdictitems : STRING COLON NAME"""
     p[0] = {p[1]: p[3]}
-    
+
 def p_outputdictitems_multiple(p):
     """outputdictitems : STRING COLON NAME COMMA outputdictitems"""
     d = p[5]
@@ -163,8 +163,7 @@ def parse_input(i):
 ##########
 
 if __name__ == "__main__":
-    # TODO: Compare lists below with global function starting with "p_"
-    rules = [
+    RULES = [
         ("Main parsing",   [p_fetchsection, p_fetchlines, p_fetchline_modify]),
         ("Fetch section",  [p_fetchline_fetch, p_paramline, p_headerline, p_cookieline, p_get, p_post]),
         ("Filter section", [p_filterline_coarse, p_filterline_fine, p_filterexpression,
@@ -173,19 +172,45 @@ if __name__ == "__main__":
                            p_outputright_expression, p_outputright_list, p_outputlistitems_single,
                            p_outputlistitems_multiple, p_outputdict, p_outputdictitems_single,
                            p_outputdictitems_multiple])]
+    ENCOUNTERED_RULES = set() # Used for merging rules.
     
-    def fl(l,p):
-        # TODO: Clean this up.
-        if ":" in l:
-            before,after = l.split(":")
-            t = p-len(before)
-            l = before + " "*t + ":" + after
-        return ("\n" +(" "*p)).join([x.strip() for x in l.split("\n")])
+    def rule_format(docstring, lsize):
+        rvals = []
+        for line in docstring.split("\n"):
+            if ":" in line:
+                separator = ":"
+                before, after = line.split(":")
+                rulename = before.strip()
+                if rulename in ENCOUNTERED_RULES:
+                    before = ""
+                    separator = "|"
+                ENCOUNTERED_RULES.add(rulename)
+                
+                rvals.append(before.ljust(lsize) + separator + after)
+            elif "|" in line:
+                before, after = line.split("|")
+                rvals.append(" ".ljust(lsize) + "|" + after)
+        return "\n".join(rvals)
 
-    print "Fetch context-free grammar:\n"
-    for section,rules in rules:
-        print section + ":"
-        for rule in rules:
-            print fl(rule.__doc__, 18)
-        print ""
+    def verify_with_global_rules(): #shittycode
+        glob = set(x for x in globals() if x.startswith("p_") and not x.startswith("p_error"))
+        local = set(z.func_name for z in reduce(lambda x,y:x+y, map(lambda x:x[-1], RULES)))
+        if glob != local:
+            print "--WARNING WARNING WARNING WARNING WARNING WARNING--"
+            print "--     Rules mismatch! Update fetchparser.py     --"
+            print "--WARNING WARNING WARNING WARNING WARNING WARNING--"
+
+    def print_grammar():
+        print "Fetch context-free grammar:\n"
+        for section,rules in RULES:
+            print section + ":"
+            for rule in rules:
+                print rule_format(rule.__doc__, 18)
+            print ""
+
+    # Print the context-free grammar in a nice readable format.
+    print_grammar()
+
+    # Compare the manually listed rules being printed with all rules in this file.
+    verify_with_global_rules()
     
