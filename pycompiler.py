@@ -82,6 +82,7 @@ def compile_before_filter(arg):
     return "x[:x.find(%s)] if %s in x else x" % (arg, arg)
 def compile_afterpos_filter(arg): return "x[%s:]" % arg.strip("'")
 def compile_beforepos_filter(arg): return "x[:%s]" % arg.strip("'")
+def compile_exclude_filter(arg): return "x.replace(%s, '')" % arg
 
 def compile_text_filter(arg): # TODO: FIX
     return "x"
@@ -124,6 +125,7 @@ def compile_finefilteraction(action):
         "afterpos" : compile_after_filter,
         "beforepos" : compile_before_filter,
         "text" : compile_text_filter,
+        "exclude" : compile_exclude_filter,
     }
     exp = "lambda x: " + compile_filter_expression(action.expression,
                                                    fine_filter_map)

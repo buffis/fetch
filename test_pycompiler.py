@@ -86,5 +86,12 @@ class TestFunctions(unittest.TestCase):
         code = pycompiler.compile_beforepos_filter("'200'")
         self.verify_fine_filter(code, "hello world", "hello world")
 
+    def test_exclude_filter(self):
+        code = pycompiler.compile_exclude_filter("'lo'")
+        self.verify_fine_filter(code, "hello world", "hel world")
+        self.verify_fine_filter(code, "hello hello", "hel hel")
+        self.verify_fine_filter(code, "foobar", "foobar")
+
+
 if __name__ == '__main__':
     unittest.main()
