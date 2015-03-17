@@ -107,6 +107,7 @@ def compile_coarsefilteraction(action):
         "ends" : compile_ends_filter,
         "contains" : compile_contains_filter,
         "length" : compile_length_filter,
+        "matches" : compile_matches_filter,
     }
     exp = "lambda x: " + compile_filter_expression(action.expression,
                                                    coarse_filter_map)
