@@ -1,7 +1,7 @@
 from parseractions import *
 
 def compile_deps():
-    return """import requests
+    return """import requests,re
 class TextWrapper(object):
     def __init__(self, lines):
         self.lines = lines
@@ -73,7 +73,8 @@ def compile_modifyurlaction(action):
 def compile_starts_filter(arg): return "x.startswith(%s)" % arg
 def compile_ends_filter(arg): return "x.endswith(%s)" % arg
 def compile_contains_filter(arg): return "%s in x" % arg
-def compile_length_filter(arg): return "len(x) %s" % arg 
+def compile_length_filter(arg): return "len(x) %s" % arg.strip("'")
+def compile_matches_filter(arg): return "re.compile(r%s).match(x)" % arg
 
 def compile_after_filter(arg):
     return "x[x.find(%s)+%d:] if %s in x else ''" % (arg, len(arg)-2, arg)
