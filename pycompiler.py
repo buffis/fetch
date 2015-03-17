@@ -78,8 +78,10 @@ def compile_matches_filter(arg): return "re.compile(r%s).match(x)" % arg
 
 def compile_after_filter(arg):
     return "x[x.find(%s)+%d:] if %s in x else ''" % (arg, len(arg)-2, arg)
+def compile_afterpos_filter(arg): return "x[%s:]" % arg.strip("'")
+def compile_beforepos_filter(arg): return "x[:%s]" % arg.strip("'")
 
-def compile_text_filter(arg):
+def compile_text_filter(arg): # TODO: FIX
     return "x"
 
 def compile_filter_expression(exp, filter_map):
@@ -116,6 +118,8 @@ def compile_coarsefilteraction(action):
 def compile_finefilteraction(action):
     fine_filter_map = {
         "after" : compile_after_filter,
+        "afterpos" : compile_after_filter,
+        "beforepos" : compile_before_filter,
         "text" : compile_text_filter,
     }
     exp = "lambda x: " + compile_filter_expression(action.expression,

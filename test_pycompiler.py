@@ -10,6 +10,8 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(eval("lambda x:" + code)(indata))
     def verify_false_filter(self, code, indata):
         self.assertFalse(eval("lambda x:" + code)(indata))
+    def verify_fine_filter(self, code, indata, expected_outdata):
+        self.assertEquals(expected_outdata, eval("lambda x:" + code)(indata))
 
     def test_starts_filter(self):
         code = pycompiler.compile_starts_filter("'hel'")
@@ -54,7 +56,29 @@ class TestFunctions(unittest.TestCase):
         self.verify_true_filter(code, "HELLO100B")
         self.verify_true_filter(code, "YO100A")
         self.verify_false_filter(code, "hello100b")
-        self.verify_false_filter(code, "foobar")        
+        self.verify_false_filter(code, "foobar")
+
+    def test_after_filter(self):
+        code = pycompiler.compile_after_filter("'ello'")
+        self.verify_fine_filter(code, "hello world", " world")
+        self.verify_fine_filter(code, "hello hi, hello hey", " hi, hello hey")
+        self.verify_fine_filter(code, "foobar", "")
+
+    def test_afterpos_filter(self):
+        code = pycompiler.compile_afterpos_filter("'0'")
+        self.verify_fine_filter(code, "hello world", "hello world")
+        code = pycompiler.compile_afterpos_filter("'2'")
+        self.verify_fine_filter(code, "hello world", "llo world")
+        code = pycompiler.compile_afterpos_filter("'200'")
+        self.verify_fine_filter(code, "hello world", "")
+
+    def test_beforepos_filter(self):
+        code = pycompiler.compile_beforepos_filter("'0'")
+        self.verify_fine_filter(code, "hello world", "")
+        code = pycompiler.compile_beforepos_filter("'2'")
+        self.verify_fine_filter(code, "hello world", "he")
+        code = pycompiler.compile_beforepos_filter("'200'")
+        self.verify_fine_filter(code, "hello world", "hello world")
 
 if __name__ == '__main__':
     unittest.main()
