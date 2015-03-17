@@ -64,6 +64,12 @@ class TestFunctions(unittest.TestCase):
         self.verify_fine_filter(code, "hello hi, hello hey", " hi, hello hey")
         self.verify_fine_filter(code, "foobar", "")
 
+    def test_before_filter(self):
+        code = pycompiler.compile_before_filter("'llo'")
+        self.verify_fine_filter(code, "hello world", "he")
+        self.verify_fine_filter(code, "hello hi, hello hey", "he")
+        self.verify_fine_filter(code, "foobar", "foobar")
+
     def test_afterpos_filter(self):
         code = pycompiler.compile_afterpos_filter("'0'")
         self.verify_fine_filter(code, "hello world", "hello world")
