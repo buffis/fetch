@@ -4,8 +4,11 @@ import re
 
 # Copied from deps. TODO: Refactor to avoid copy+paste
 def striptags(x, v):
-    subbed = re.sub(r'<%s.*?>.*?</%s>' % (v,v), '', x)
-    subbed = re.sub(r'<%s.*?/>' % v, '', subbed)
+    tags = v.split(",")
+    subbed = x
+    for tag in tags:
+        subbed = re.sub(r'<%s.*?>.*?</%s>' % (tag, tag), '', subbed)
+        subbed = re.sub(r'<%s.*?/>' % tag, '', subbed)
     return subbed
 
 class TestFunctions(unittest.TestCase):
@@ -103,10 +106,16 @@ class TestFunctions(unittest.TestCase):
         code = pycompiler.compile_striptags_filter("'p'")
         self.verify_fine_filter(code, "hello <p>foobar</p> world", "hello  world")
         code = pycompiler.compile_striptags_filter("'img'")
-        self.verify_fine_filter(code, "hello <img src='pic.jpg'/> world", "hello  world")
+        self.verify_fine_filter(code,
+                                "hello <img src='pic.jpg'/> world",
+                                "hello  world")
         self.verify_fine_filter(code,
                                 "hello <img src='pic.jpg'/><img src='pic.jpg'/> world",
                                 "hello  world")
+        code = pycompiler.compile_striptags_filter("'p,img'")
+        self.verify_fine_filter(code,
+                                "hello <p>hello</p><img src='pic.jpg'/>world",
+                                "hello world")
 
 if __name__ == '__main__':
     unittest.main()

@@ -45,8 +45,11 @@ class UrlWrapper(object):
         return self.text_wrapper.map(exp)
 
 def striptags(x, v):
-    subbed = re.sub(r'<%s.*?>.*?</%s>' % (v,v), '', x)
-    subbed = re.sub(r'<%s.*?/>' % v, '', subbed)
+    tags = v.split(",")
+    subbed = x
+    for tag in tags:
+        subbed = re.sub(r'<%s.*?>.*?</%s>' % (tag, tag), '', subbed)
+        subbed = re.sub(r'<%s.*?/>' % tag, '', subbed)
     return subbed
 """
 
