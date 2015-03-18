@@ -33,6 +33,12 @@ def print_compiled():
     f.write(data)
     f.close()
 
+def interpret():
+    import fetchinterpreter
+    compiled = fetchparser.parse_input(open("sample.fetch").read())
+    for line in compiled:
+        fetchinterpreter.handle_line(line)
+
 def execute_compiled():
     execfile("fetchout.py")
 
@@ -48,7 +54,10 @@ if __name__ == "__main__":
         import sys
         sys.exit(1)
         
-    print "\n--Compiled--"
-    print_compiled()
-    print "\n--Executing--"
-    execfile("fetchout.py")
+    #print "\n--Compiled--"
+    #print_compiled()
+    #print "\n--Executing--"
+    #execfile("fetchout.py")
+
+    print "\n--Interpreting--"
+    interpret()
