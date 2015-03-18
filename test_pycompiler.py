@@ -2,6 +2,12 @@ import pycompiler
 import unittest
 import re
 
+# Copied from deps. TODO: Refactor to avoid copy+paste
+def striptags(x, v):
+    subbed = re.sub(r'<%s.*?>.*?</%s>' % (v,v), '', x)
+    subbed = re.sub(r'<%s.*?/>' % v, '', subbed)
+    return subbed
+
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         pass
@@ -92,6 +98,15 @@ class TestFunctions(unittest.TestCase):
         self.verify_fine_filter(code, "hello hello", "hel hel")
         self.verify_fine_filter(code, "foobar", "foobar")
 
+    def test_striptags_filter(self):
+        # TODO: Only support one tag currently, fix
+        code = pycompiler.compile_striptags_filter("'p'")
+        self.verify_fine_filter(code, "hello <p>foobar</p> world", "hello  world")
+        code = pycompiler.compile_striptags_filter("'img'")
+        self.verify_fine_filter(code, "hello <img src='pic.jpg'/> world", "hello  world")
+        self.verify_fine_filter(code,
+                                "hello <img src='pic.jpg'/><img src='pic.jpg'/> world",
+                                "hello  world")
 
 if __name__ == '__main__':
     unittest.main()

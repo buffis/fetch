@@ -43,6 +43,11 @@ class UrlWrapper(object):
         if not self.text_wrapper:
             self.do_request()
         return self.text_wrapper.map(exp)
+
+def striptags(x, v):
+    subbed = re.sub(r'<%s.*?>.*?</%s>' % (v,v), '', x)
+    subbed = re.sub(r'<%s.*?/>' % v, '', subbed)
+    return subbed
 """
 
 def compile_finish():
@@ -83,6 +88,7 @@ def compile_before_filter(arg):
 def compile_afterpos_filter(arg): return "x[%s:]" % arg.strip("'")
 def compile_beforepos_filter(arg): return "x[:%s]" % arg.strip("'")
 def compile_exclude_filter(arg): return "x.replace(%s, '')" % arg
+def compile_striptags_filter(arg): return "striptags(x, %s)" % arg
 
 def compile_text_filter(arg): # TODO: FIX
     return "x"
@@ -126,6 +132,7 @@ def compile_finefilteraction(action):
         "beforepos" : compile_before_filter,
         "text" : compile_text_filter,
         "exclude" : compile_exclude_filter,
+        "striptags" : compile_striptags_filter,
     }
     exp = "lambda x: " + compile_filter_expression(action.expression,
                                                    fine_filter_map)
