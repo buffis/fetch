@@ -77,7 +77,18 @@ def starts_filter(arg): return lambda x: x.startswith(arg)
 def ends_filter(arg): return lambda x: x.endswith(arg)
 def contains_filter(arg): return lambda x: s in arg
 def matches_filter(arg): return lambda x: re.compile(arg).match(x)
-# TODO: def length_filter(arg): return lambda x: len(x) arg
+def length_filter(arg):
+    tmp = re.search(r"<(\d+)", x)
+    if tmp:
+        return len(x) < tmp.groups()[0]
+    tmp = re.search(r">(\d+)", x)
+    if tmp:
+        return len(x) > tmp.groups()[0]
+    tmp = re.search(r"=(\d+)", x)
+    if tmp:
+        return len(x) == tmp.groups()[0]
+    print "Invalid input to length filter: ", arg
+    #TODO: Handle error
 
 def after_filter(arg): return lambda x: x[x.find(arg)+len(arg)-2:] if arg in x else ''
 def before_filter(arg): return lambda x: x[:x.find(arg)] if arg in x else x
@@ -99,7 +110,7 @@ def coarsefilteraction(action):
         "ends" : ends_filter,
         "containts" : contains_filter,
         "matches" : matches_filter,
-        #"length" : length_filter, TODO
+        "length" : length_filter,
     }
     f = filter_expression(action.expression, coarse_filter_map)
     VARS[action.name] = VARS[action.indata].filter(f)
