@@ -38,6 +38,7 @@ def interpret():
     compiled = fetchparser.parse_input(open("sample.fetch").read())
     for line in compiled:
         fetchinterpreter.handle_line(line)
+    print "Output", fetchinterpreter.get_output()
 
 def execute_compiled():
     execfile("fetchout.py")

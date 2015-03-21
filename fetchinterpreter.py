@@ -75,22 +75,24 @@ def modifyurlaction(action):
 # TODO: Enforce validation?
 def starts_filter(arg): return lambda x: x.startswith(arg)
 def ends_filter(arg): return lambda x: x.endswith(arg)
-def contains_filter(arg): return lambda x: s in arg
+def contains_filter(arg): return lambda x: x in arg
 def matches_filter(arg): return lambda x: re.compile(arg).match(x)
 def length_filter(arg):
-    tmp = re.search(r"<(\d+)", x)
-    if tmp:
-        return len(x) < tmp.groups()[0]
-    tmp = re.search(r">(\d+)", x)
-    if tmp:
-        return len(x) > tmp.groups()[0]
-    tmp = re.search(r"=(\d+)", x)
-    if tmp:
-        return len(x) == tmp.groups()[0]
-    print "Invalid input to length filter: ", arg
+    def t(x):
+        tmp = re.search(r"<(\d+)", x)
+        if tmp:
+            return len(x) < tmp.groups()[0]
+        tmp = re.search(r">(\d+)", x)
+        if tmp:
+            return len(x) > tmp.groups()[0]
+        tmp = re.search(r"=(\d+)", x)
+        if tmp:
+            return len(x) == tmp.groups()[0]
+        print "Invalid input to length filter: ", arg
+    return t
     #TODO: Handle error
 
-def after_filter(arg): return lambda x: x[x.find(arg)+len(arg)-2:] if arg in x else ''
+def after_filter(arg): return lambda x: x[x.find(arg)+len(arg):] if arg in x else ''
 def before_filter(arg): return lambda x: x[:x.find(arg)] if arg in x else x
 def afterpos_filter(arg): return lambda x: x[arg:]
 def beforepos_filter(arg): return lambda x: x[:arg]
@@ -119,16 +121,37 @@ def finefilteraction(action):
     fine_filter_map = {
         "after" : after_filter,
         "before" : before_filter,
-        "afterpos" : after_filter,
-        "beforepos" : before_filter,
+        "afterpos" : afterpos_filter,
+        "beforepos" : beforepos_filter,
         "text" : text_filter,
         "exclude" : exclude_filter,
         "striptags" : striptags_filter,
     }
     f = filter_expression(action.expression, fine_filter_map)
-    VARS[action.name] = VARS[action.indata].filter(f)
+    VARS[action.name] = VARS[action.indata].map(f)
 
 ##################### END FILTER SECTION #######################
+
+####################### OUTPUT SECTION #########################
+
+def outputassignment(action):
+    # only simple vars so far
+    VARS[action.name] = outputassignment_right(action.value)
+
+def outputassignment_right(value):
+    if (type(value) == ListPlus):
+        return outputassignment_right(value.l1) + outputassignment_right(value.l2)
+    if (type(value) == ListAt):
+        return value.l.output()[value.at]
+    if type(value)== dict:
+        pass
+        #TODO: Implement.
+        #return "{" + ", ".join(["%s : %s.output()" % (x,y) for (x,y) in value.items()]) + "}"
+    if type(value) == str:
+        return VARS[value].output()
+
+##################### END OUTPUT SECTION #######################
+
 
 def handle_line(line):
     action_map = {
@@ -136,7 +159,10 @@ def handle_line(line):
         ModifyUrlAction : modifyurlaction,
         CoarseFilterAction : coarsefilteraction,
         FineFilterAction : finefilteraction,
-        OutputAssignment : lambda x: x,
+        OutputAssignment : outputassignment,
     }
     action_map[type(line)](line)
     print "Handled: ", line
+
+def get_output():
+    return VARS['output']

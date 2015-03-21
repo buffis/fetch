@@ -59,6 +59,9 @@ target/
 parser.out
 parsetab.py
 
+# PyCharm
+.idea
+
 # Stuff
 test.py
 fetchout.py
