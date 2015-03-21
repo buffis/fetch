@@ -25,6 +25,7 @@ class UrlWrapper(object):
         self.text_wrapper = None
         
     def do_request(self):
+        # TODO: Handle POST
         req = requests.get(self.url,
                            params=self.params,
                            headers=self.headers,
@@ -97,9 +98,9 @@ def finefilteraction(action):
         "before" : before_filter,
         "afterpos" : afterpos_filter,
         "beforepos" : beforepos_filter,
-        "text" : text_filter,
         "exclude" : exclude_filter,
         "striptags" : striptags_filter,
+        #"text" : text_filter, # TODO: Implement
     }
     f = filter_expression(action.expression, fine_filter_map)
     VARS[action.name] = VARS[action.indata].map(f)
@@ -110,6 +111,7 @@ def finefilteraction(action):
 
 def outputassignment(action):
     # only simple vars so far
+    # TODO: Implement rest
     VARS[action.name] = outputassignment_right(action.value)
 
 def outputassignment_right(value):
