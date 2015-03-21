@@ -1,4 +1,5 @@
 from parseractions import *
+from fetchfilters import *
 import requests,re
 
 class TextWrapper(object):
@@ -71,40 +72,13 @@ def modifyurlaction(action):
 ###################### END FETCH SECTION ###################### 
 
 ####################### FILTER SECTION ########################
-
-# TODO: Enforce validation?
-def starts_filter(arg): return lambda x: x.startswith(arg)
-def ends_filter(arg): return lambda x: x.endswith(arg)
-def contains_filter(arg): return lambda x: x in arg
-def matches_filter(arg): return lambda x: re.compile(arg).match(x)
-def length_filter(arg):
-    def t(x):
-        tmp = re.search(r"<(\d+)", x)
-        if tmp:
-            return len(x) < tmp.groups()[0]
-        tmp = re.search(r">(\d+)", x)
-        if tmp:
-            return len(x) > tmp.groups()[0]
-        tmp = re.search(r"=(\d+)", x)
-        if tmp:
-            return len(x) == tmp.groups()[0]
-        print "Invalid input to length filter: ", arg
-    return t
-    #TODO: Handle error
-
-def after_filter(arg): return lambda x: x[x.find(arg)+len(arg):] if arg in x else ''
-def before_filter(arg): return lambda x: x[:x.find(arg)] if arg in x else x
-def afterpos_filter(arg): return lambda x: x[arg:]
-def beforepos_filter(arg): return lambda x: x[:arg]
-def exclude_filter(arg): return lambda x: x.replace(arg, '')
-def striptags_filter(arg): return lambda x: striptags(x, arg)
-
-def text_filter(arg): return lambda x: x #TODO
+# TODO: Refactor filter maps
 
 def filter_expression(exp, filter_map):
     t = type(exp)
     if t == BasicFilterExpression:
         return filter_map[exp.key](exp.arg.strip("'"))
+    # TODO: non-basic filtering
 
 def coarsefilteraction(action):
     coarse_filter_map = {
