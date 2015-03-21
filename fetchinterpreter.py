@@ -85,7 +85,7 @@ def coarsefilteraction(action):
     coarse_filter_map = {
         "starts" : starts_filter,
         "ends" : ends_filter,
-        "containts" : contains_filter,
+        "contains" : contains_filter,
         "matches" : matches_filter,
         "length" : length_filter,
     }
