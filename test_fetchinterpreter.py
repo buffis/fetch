@@ -7,7 +7,8 @@ TEST_URL = "http://stackoverflow.com/questions/8221296/how-can-i-download-and-re
 class TestFunctions(unittest.TestCase):
 
     def setUp(self):
-        pass
+        print "Testing: ", self
+        fetchinterpreter.VARS = {}
 
     def test_fetchaction_get(self):
         name = "test"
@@ -23,7 +24,19 @@ class TestFunctions(unittest.TestCase):
         self.assertEquals("POST", fetchinterpreter.VARS[name].method)
         self.assertEquals(TEST_URL, fetchinterpreter.VARS[name].url, TEST_URL)
 
-
+    def test_filter_start(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "world hello",
+            "hello hello",
+            "world"
+        ])
+        action = CoarseFilterAction("x", BasicFilterExpression("starts","hello"), "y")
+        fetchinterpreter.coarsefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(2, len(output))
+        self.assertTrue("hello world" in output)
+        self.assertTrue("hello hello" in output)
 
 if __name__ == '__main__':
     unittest.main()
