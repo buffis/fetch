@@ -45,14 +45,6 @@ class UrlWrapper(object):
             self.do_request()
         return self.text_wrapper.map(exp)
 
-def striptags(x, v):
-    tags = v.split(",")
-    subbed = x
-    for tag in tags:
-        subbed = re.sub(r'<%s.*?>.*?</%s>' % (tag, tag), '', subbed)
-        subbed = re.sub(r'<%s.*?/>' % tag, '', subbed)
-    return subbed
-
 VARS = {}
 
 ######################## FETCH SECTION ######################## 
