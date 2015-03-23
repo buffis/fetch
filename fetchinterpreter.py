@@ -1,6 +1,6 @@
 from parseractions import *
 from fetchfilters import *
-import requests,re
+import requests
 
 class TextWrapper(object):
     def __init__(self, lines):
