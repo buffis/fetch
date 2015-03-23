@@ -5,7 +5,6 @@ from parseractions import *
 TEST_URL = "http://stackoverflow.com/questions/8221296/how-can-i-download-and-read-a-url-with-universal-newlines"
 
 class TestFunctions(unittest.TestCase):
-
     def setUp(self):
         print "Testing: ", self
         fetchinterpreter.VARS = {}
@@ -172,7 +171,6 @@ class TestFunctions(unittest.TestCase):
         action = FineFilterAction("x", BasicFilterExpression("beforepos","3"), "y")
         fetchinterpreter.finefilteraction(action)
         output = fetchinterpreter.VARS["x"].output()
-        self.assertEquals(4, len(output))
         self.assertEquals(["hel", "wor", "hel", "wor"], output)
 
     def test_filter_exclude(self):
@@ -186,8 +184,39 @@ class TestFunctions(unittest.TestCase):
         action = FineFilterAction("x", BasicFilterExpression("exclude","world"), "y")
         fetchinterpreter.finefilteraction(action)
         output = fetchinterpreter.VARS["x"].output()
-        self.assertEquals(5, len(output))
         self.assertEquals(["hello ", " hello", "hello hello", "", " "], output)
+
+    def test_filter_striptags_img(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello <p>foobar</p> world",
+            "hello <img src='pic.jpg'/> world",
+            "hello <img src='pic.jpg'/><img src='pic.jpg'/> world",
+            "hello <p>hello</p><img src='pic.jpg'/>world",
+        ])
+        action = FineFilterAction("x", BasicFilterExpression("striptags","img"), "y")
+        fetchinterpreter.finefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals([
+            "hello <p>foobar</p> world",
+            "hello  world",
+            "hello  world",
+            "hello <p>hello</p>world"], output)
+
+    def test_filter_striptags_p_and_img(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello <p>foobar</p> world",
+            "hello <img src='pic.jpg'/> world",
+            "hello <img src='pic.jpg'/><img src='pic.jpg'/> world",
+            "hello <p>hello</p><img src='pic.jpg'/>world",
+        ])
+        action = FineFilterAction("x", BasicFilterExpression("striptags","p,img"), "y")
+        fetchinterpreter.finefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals([
+            "hello  world",
+            "hello  world",
+            "hello  world",
+            "hello world"], output)
 
 if __name__ == '__main__':
     unittest.main()
