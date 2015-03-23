@@ -66,6 +66,114 @@ class TestFunctions(unittest.TestCase):
         self.assertEquals(1, len(output))
         self.assertTrue("world hello" in output)
 
+    def test_filter_matches(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "HELLO100B",
+            "YO100A",
+            "hello100b",
+            "foobar"
+        ])
+        action = CoarseFilterAction("x", BasicFilterExpression("matches","[A-Z]+100[ABC]"), "y")
+        fetchinterpreter.coarsefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(2, len(output))
+        self.assertTrue("HELLO100B" in output)
+        self.assertTrue("YO100A" in output)
+
+    def test_filter_length_gt(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "world hello",
+            "hello hello",
+            "world"
+        ])
+        action = CoarseFilterAction("x", BasicFilterExpression("length",">5"), "y")
+        fetchinterpreter.coarsefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(3, len(output))
+        self.assertTrue("hello world" in output)
+        self.assertTrue("world hello" in output)
+        self.assertTrue("hello hello" in output)
+
+    def test_filter_length_lt(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "world hello",
+            "hello hello",
+            "world"
+        ])
+        action = CoarseFilterAction("x", BasicFilterExpression("length","<6"), "y")
+        fetchinterpreter.coarsefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(1, len(output))
+        self.assertTrue("world" in output)
+
+    def test_filter_length_eq(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "world hello",
+            "hello hello",
+            "world"
+        ])
+        action = CoarseFilterAction("x", BasicFilterExpression("length","=5"), "y")
+        fetchinterpreter.coarsefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(1, len(output))
+        self.assertTrue("world" in output)
+
+    # Fine filters below.
+
+    def test_filter_after(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "world hello",
+            "hello hello",
+            "world"
+        ])
+        action = FineFilterAction("x", BasicFilterExpression("after","hell"), "y")
+        fetchinterpreter.finefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(4, len(output))
+        self.assertEquals(["o world", "o", "o hello", ""], output)
+
+    def test_filter_before(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "world hello",
+            "hello hello",
+            "world"
+        ])
+        action = FineFilterAction("x", BasicFilterExpression("before","orl"), "y")
+        fetchinterpreter.finefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(4, len(output))
+        self.assertEquals(["hello w", "w", "hello hello", "w"], output)
+
+    def test_filter_afterpos(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "world hello",
+            "hello hello",
+            "world"
+        ])
+        action = FineFilterAction("x", BasicFilterExpression("afterpos","3"), "y")
+        fetchinterpreter.finefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(4, len(output))
+        self.assertEquals(["lo world", "ld hello", "lo hello", "ld"], output)
+
+    def test_filter_beforepos(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "world hello",
+            "hello hello",
+            "world"
+        ])
+        action = FineFilterAction("x", BasicFilterExpression("beforepos","3"), "y")
+        fetchinterpreter.finefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(4, len(output))
+        self.assertEquals(["hel", "wor", "hel", "wor"], output)
 
 if __name__ == '__main__':
     unittest.main()

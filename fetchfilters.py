@@ -9,15 +9,16 @@ def contains_filter(arg): return lambda x: arg in x
 def matches_filter(arg): return lambda x: re.compile(arg).match(x)
 def length_filter(arg):
     def t(x):
-        tmp = re.search(r"<(\d+)", x)
+        tmp = re.search(r"<(\d+)", arg)
         if tmp:
-            return len(x) < tmp.groups()[0]
-        tmp = re.search(r">(\d+)", x)
+            return len(x) < int(tmp.groups()[0])
+        tmp = re.search(r">(\d+)", arg)
         if tmp:
-            return len(x) > tmp.groups()[0]
-        tmp = re.search(r"=(\d+)", x)
+            a = tmp.groups()[0]
+            return len(x) > int(tmp.groups()[0])
+        tmp = re.search(r"=(\d+)", arg)
         if tmp:
-            return len(x) == tmp.groups()[0]
+            return len(x) == int(tmp.groups()[0])
         print "Invalid input to length filter: ", arg
     return t
     #TODO: Handle error
@@ -25,8 +26,8 @@ def length_filter(arg):
 # Fine filters:
 def after_filter(arg): return lambda x: x[x.find(arg)+len(arg):] if arg in x else ''
 def before_filter(arg): return lambda x: x[:x.find(arg)] if arg in x else x
-def afterpos_filter(arg): return lambda x: x[arg:]
-def beforepos_filter(arg): return lambda x: x[:arg]
+def afterpos_filter(arg): return lambda x: x[int(arg):]
+def beforepos_filter(arg): return lambda x: x[:int(arg)]
 def exclude_filter(arg): return lambda x: x.replace(arg, '')
 def striptags_filter(arg):
     def striptags(x, v):
