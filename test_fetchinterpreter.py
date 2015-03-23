@@ -175,5 +175,19 @@ class TestFunctions(unittest.TestCase):
         self.assertEquals(4, len(output))
         self.assertEquals(["hel", "wor", "hel", "wor"], output)
 
+    def test_filter_exclude(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "world hello",
+            "hello hello",
+            "world",
+            "world world"
+        ])
+        action = FineFilterAction("x", BasicFilterExpression("exclude","world"), "y")
+        fetchinterpreter.finefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(5, len(output))
+        self.assertEquals(["hello ", " hello", "hello hello", "", " "], output)
+
 if __name__ == '__main__':
     unittest.main()
