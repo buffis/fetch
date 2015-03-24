@@ -232,6 +232,66 @@ class TestFunctions(unittest.TestCase):
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(["world hello", "world"], output)
 
+    def test_combined_filter_or(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "goodbye world",
+            "hello hello",
+            "world hello",
+            "world goodbye"
+        ])
+        action = CoarseFilterAction("x",
+                                    CombinedFilterExpression(
+                                        BasicFilterExpression("starts","hello"),
+                                        BasicFilterExpression("starts","goodbye"),
+                                        "|"
+                                    ),
+                                    "y")
+        fetchinterpreter.coarsefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals([
+            "hello world",
+            "goodbye world",
+            "hello hello"
+        ], output)
+
+    def test_combined_filter_and(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "goodbye world",
+            "hello hello",
+            "world hello",
+            "hello goodbye"
+        ])
+        action = CoarseFilterAction("x",
+                                    CombinedFilterExpression(
+                                        BasicFilterExpression("starts","hello"),
+                                        BasicFilterExpression("ends","goodbye"),
+                                        "&"
+                                    ),
+                                    "y")
+        fetchinterpreter.coarsefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(["hello goodbye"], output)
+
+    def test_combined_filter_and_noresult(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "goodbye world",
+            "hello hello",
+            "world hello",
+            "world goodbye"
+        ])
+        action = CoarseFilterAction("x",
+                                    CombinedFilterExpression(
+                                        BasicFilterExpression("starts","hello"),
+                                        BasicFilterExpression("starts","goodbye"),
+                                        "&"
+                                    ),
+                                    "y")
+        fetchinterpreter.coarsefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals([], output)
 
 if __name__ == '__main__':
     unittest.main()

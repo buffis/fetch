@@ -70,15 +70,17 @@ def modifyurlaction(action):
 # TODO: Refactor filter maps
 
 def filter_expression(exp, filter_map):
+    # TODO: Verify neg/or/and coarse filter only is possible (or do in parser).
     t = type(exp)
     if t == BasicFilterExpression:
         return filter_map[exp.key](exp.arg.strip("'"))
     if t == NegFilterExpression:
-        # TODO: Verify negating coarse filter only.
         return lambda x: not filter_expression(exp.exp, filter_map)(x)
     if t == CombinedFilterExpression:
-        pass # TODO: THIS IS HARD
-    # TODO: non-basic filtering
+        f1 = filter_expression(exp.exp1, filter_map)
+        f2 = filter_expression(exp.exp2, filter_map)
+        if exp.op == "|": return lambda x: f1(x) or f2(x)
+        if exp.op == "&": return lambda x: f1(x) and f2(x)
 
 def coarsefilteraction(action):
     coarse_filter_map = {
