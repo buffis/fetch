@@ -2,6 +2,8 @@ from parseractions import *
 from fetchfilters import *
 import requests
 
+# TODO: Error handling on raised exceptions
+
 class TextWrapper(object):
     def __init__(self, lines):
         self.lines = lines
@@ -71,6 +73,11 @@ def filter_expression(exp, filter_map):
     t = type(exp)
     if t == BasicFilterExpression:
         return filter_map[exp.key](exp.arg.strip("'"))
+    if t == NegFilterExpression:
+        # TODO: Verify negating coarse filter only.
+        return lambda x: not filter_expression(exp.exp, filter_map)(x)
+    if t == CombinedFilterExpression:
+        pass # TODO: THIS IS HARD
     # TODO: non-basic filtering
 
 def coarsefilteraction(action):

@@ -218,5 +218,20 @@ class TestFunctions(unittest.TestCase):
             "hello  world",
             "hello world"], output)
 
+    def test_neg_coarse_filter(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
+            "hello world",
+            "world hello",
+            "hello hello",
+            "world"
+        ])
+        action = CoarseFilterAction("x",
+                                    NegFilterExpression(BasicFilterExpression("starts","hello")),
+                                    "y")
+        fetchinterpreter.coarsefilteraction(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(["world hello", "world"], output)
+
+
 if __name__ == '__main__':
     unittest.main()

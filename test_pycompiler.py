@@ -102,7 +102,6 @@ class TestFunctions(unittest.TestCase):
         self.verify_fine_filter(code, "foobar", "foobar")
 
     def test_striptags_filter(self):
-        # TODO: Only support one tag currently, fix
         code = pycompiler.compile_striptags_filter("'p'")
         self.verify_fine_filter(code, "hello <p>foobar</p> world", "hello  world")
         code = pycompiler.compile_striptags_filter("'img'")
