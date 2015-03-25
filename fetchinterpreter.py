@@ -17,6 +17,15 @@ class TextWrapper(object):
     def output(self):
         return self.lines
 
+    def __add__(self, other):
+        return TextWrapper(self.output() + other.output())
+
+    def __getitem__(self, item):
+        pos = int(item)
+        if pos > (len(self.lines) - 1):
+            raise SyntaxError("Position %d is out of range" % pos)
+        return TextWrapper([self.output()[pos]])
+
 class UrlWrapper(object):
     def __init__(self, method, url):
         self.method = method
@@ -67,7 +76,6 @@ def modifyurlaction(action):
 ###################### END FETCH SECTION ###################### 
 
 ####################### FILTER SECTION ########################
-# TODO: Refactor filter maps
 
 def filter_expression(exp, filter_map):
     # TODO: Verify neg/or/and coarse filter only is possible (or do in parser).
@@ -111,21 +119,24 @@ def finefilteraction(action):
 ####################### OUTPUT SECTION #########################
 
 def outputassignment(action):
-    # only simple vars so far
+    # Left side only does simple vars currently
     # TODO: Implement rest
     VARS[action.name] = outputassignment_right(action.value)
 
 def outputassignment_right(value):
-    if (type(value) == ListPlus):
+    if type(value) == ListPlus:
         return outputassignment_right(value.l1) + outputassignment_right(value.l2)
-    if (type(value) == ListAt):
-        return value.l.output()[value.at]
-    if type(value)== dict:
-        pass
-        #TODO: Implement.
-        #return "{" + ", ".join(["%s : %s.output()" % (x,y) for (x,y) in value.items()]) + "}"
+    if type(value) == ListAt:
+        return VARS[value.l][value.at]
+    if type(value) == dict:
+        return_dict = {}
+        for k, v in value.items():
+            return_dict[k] = VARS[v]
+        return return_dict
     if type(value) == str:
-        return VARS[value].output()
+        return VARS[value]
+    else:
+        raise SyntaxError("Unknown type: " + str(type(value)))
 
 ##################### END OUTPUT SECTION #######################
 

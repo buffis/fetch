@@ -293,5 +293,45 @@ class TestFunctions(unittest.TestCase):
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals([], output)
 
+    def test_assignment(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper(["hello world"])
+        action = OutputAssignment("x", "y")
+        fetchinterpreter.outputassignment(action)
+        self.assertTrue("x" in fetchinterpreter.VARS)
+        self.assertEquals(["hello world"], fetchinterpreter.VARS["x"].output())
+
+    def test_assignment_plus(self):
+        fetchinterpreter.VARS["y1"] = fetchinterpreter.TextWrapper(["hello world"])
+        fetchinterpreter.VARS["y2"] = fetchinterpreter.TextWrapper(["goodbye world"])
+        action = OutputAssignment("x", ListPlus("y1", "y2"))
+        fetchinterpreter.outputassignment(action)
+        self.assertTrue("x" in fetchinterpreter.VARS)
+        self.assertEquals(["hello world", "goodbye world"], fetchinterpreter.VARS["x"].output())
+
+    def test_assignment_valueat(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper(["hello", "world", "goodbye"])
+        action = OutputAssignment("x", ListAt("y", "1"))
+        fetchinterpreter.outputassignment(action)
+        self.assertTrue("x" in fetchinterpreter.VARS)
+        self.assertEquals(["world"], fetchinterpreter.VARS["x"].output())
+
+    def test_assignment_valueat_notinrange(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper(["hello", "world", "goodbye"])
+        action = OutputAssignment("x", ListAt("y", "10"))
+        try:
+            fetchinterpreter.outputassignment(action)
+            self.fail("Expected failure")
+        except SyntaxError:
+            pass # Expected
+
+    def test_assignment_dict(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper(["hello world"])
+        action = OutputAssignment("x", {"z" : "y"})
+        fetchinterpreter.outputassignment(action)
+        self.assertTrue("x" in fetchinterpreter.VARS)
+        self.assertTrue("z" in fetchinterpreter.VARS["x"])
+        self.assertEquals(["hello world"], fetchinterpreter.VARS["x"]["z"].output())
+
+
 if __name__ == '__main__':
     unittest.main()
