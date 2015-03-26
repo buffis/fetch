@@ -7,6 +7,11 @@ from parseractions import *
 # Main rules
 ##########
 
+precedence = (
+    ('left', 'AND', 'OR'),
+    ('right', 'BANG'),
+)
+
 def p_fetchsection(p):
     """fetchcode : fetchlines"""
     p[0] = p[1]
