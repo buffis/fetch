@@ -37,10 +37,19 @@ class UrlWrapper(object):
         
     def do_request(self):
         # TODO: Handle POST
-        req = requests.get(self.url,
-                           params=self.params,
-                           headers=self.headers,
-                           cookies=self.cookies)
+        if self.method == "GET":
+            req = requests.get(self.url,
+                               params=self.params,
+                               headers=self.headers,
+                               cookies=self.cookies)
+        elif self.method == "POST":
+            req = requests.post(self.url,
+                                params=self.params,
+                                headers=self.headers,
+                                cookies=self.cookies)
+        else:
+            raise SyntaxError("Illegal request method: " + self.method)
+
         if req.status_code != 200:
              print "FAILED"
              return
