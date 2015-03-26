@@ -36,7 +36,6 @@ class UrlWrapper(object):
         self.text_wrapper = None
         
     def do_request(self):
-        # TODO: Handle POST
         if self.method == "GET":
             req = requests.get(self.url,
                                params=self.params,
@@ -87,7 +86,6 @@ def modifyurlaction(action):
 ####################### FILTER SECTION ########################
 
 def filter_expression(exp, filter_map):
-    # TODO: Verify neg/or/and coarse filter only is possible (or do in parser).
     t = type(exp)
     if t == BasicFilterExpression:
         return filter_map[exp.key](exp.arg.strip("'"))

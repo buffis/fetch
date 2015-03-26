@@ -68,7 +68,7 @@ def p_cookieline(p):
 ##########
 
 def p_filterline_coarse(p):
-    """filterline : NAME EQUALS LBRACE filterexpression RBRACE NAME NEWLINE"""
+    """filterline : NAME EQUALS LBRACE coarsefilterexpression RBRACE NAME NEWLINE"""
     p[0] = CoarseFilterAction(p[1], p[4], p[6])
 
 def p_filterline_fine(p):
@@ -83,13 +83,17 @@ def p_filterexpression_noarg(p):
     """filterexpression : NAME"""
     p[0] = BasicFilterExpression(p[1])
 
-def p_filterexpression_neg(p):
-    """filterexpression : BANG filterexpression"""
+def p_coarsefilterexpression(p):
+    """coarsefilterexpression : filterexpression"""
+    p[0] = p[1]
+
+def p_coarsefilterexpression_neg(p):
+    """coarsefilterexpression : BANG coarsefilterexpression"""
     p[0] = NegFilterExpression(p[2])
 
-def p_filterexpression_combined(p):
-    """filterexpression : filterexpression AND filterexpression
-                        | filterexpression OR filterexpression"""
+def p_coarsefilterexpression_combined(p):
+    """coarsefilterexpression : coarsefilterexpression AND coarsefilterexpression
+                              | coarsefilterexpression OR coarsefilterexpression"""
     p[0] = CombinedFilterExpression(p[1],p[3],p[2])
 
 
@@ -167,11 +171,12 @@ if __name__ == "__main__":
         ("Main parsing",   [p_fetchsection, p_fetchlines, p_fetchline_modify]),
         ("Fetch section",  [p_fetchline_fetch, p_paramline, p_headerline, p_cookieline, p_get, p_post]),
         ("Filter section", [p_filterline_coarse, p_filterline_fine, p_filterexpression,
-                           p_filterexpression_noarg, p_filterexpression_neg, p_filterexpression_combined]),
+                            p_filterexpression_noarg, p_coarsefilterexpression, p_coarsefilterexpression_neg,
+                            p_coarsefilterexpression_combined]),
         ("Output section", [p_outputline, p_outputline_dict, p_outputright, p_outputright_arrayitem,
-                           p_outputright_expression, p_outputright_list, p_outputlistitems_single,
-                           p_outputlistitems_multiple, p_outputdict, p_outputdictitems_single,
-                           p_outputdictitems_multiple])]
+                            p_outputright_expression, p_outputright_list, p_outputlistitems_single,
+                            p_outputlistitems_multiple, p_outputdict, p_outputdictitems_single,
+                            p_outputdictitems_multiple])]
     ENCOUNTERED_RULES = set() # Used for merging rules.
     
     def rule_format(docstring, lsize):
@@ -205,7 +210,7 @@ if __name__ == "__main__":
         for section,rules in RULES:
             print section + ":"
             for rule in rules:
-                print rule_format(rule.__doc__, 18)
+                print rule_format(rule.__doc__, 25)
             print ""
 
     # Print the context-free grammar in a nice readable format.
