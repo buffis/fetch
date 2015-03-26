@@ -332,6 +332,12 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue("z" in fetchinterpreter.VARS["x"])
         self.assertEquals(["hello world"], fetchinterpreter.VARS["x"]["z"].output())
 
+    def test_assignment_dict_lvalue(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper(["hello world"])
+        fetchinterpreter.VARS["x"] = {}
+        action = OutputAssignment(DictAt("x","z"), "y")
+        fetchinterpreter.outputassignment(action)
+        self.assertEquals(["hello world"], fetchinterpreter.VARS["x"]["z"].output())
 
 if __name__ == '__main__':
     unittest.main()

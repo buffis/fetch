@@ -119,21 +119,24 @@ def finefilteraction(action):
 ####################### OUTPUT SECTION #########################
 
 def outputassignment(action):
-    # Left side only does simple vars currently
-    # TODO: Implement rest
-    VARS[action.name] = outputassignment_right(action.value)
+    if type(action.name) == str:
+        VARS[action.name] = outputassignment_right(action.value)
+    elif type(action.name) == DictAt:
+        VARS[action.name.d][action.name.at] = outputassignment_right(action.value)
+    else:
+        raise SyntaxError("Unknown type: " + str(type(action.name)))
 
 def outputassignment_right(value):
     if type(value) == ListPlus:
         return outputassignment_right(value.l1) + outputassignment_right(value.l2)
-    if type(value) == ListAt:
+    elif type(value) == ListAt:
         return VARS[value.l][value.at]
-    if type(value) == dict:
+    elif type(value) == dict:
         return_dict = {}
         for k, v in value.items():
             return_dict[k] = VARS[v]
         return return_dict
-    if type(value) == str:
+    elif type(value) == str:
         return VARS[value]
     else:
         raise SyntaxError("Unknown type: " + str(type(value)))
