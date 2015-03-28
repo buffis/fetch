@@ -160,7 +160,6 @@ def handle_line(line):
         OutputAssignment : outputassignment,
     }
     action_map[type(line)](line)
-    print "Handled: ", line
 
 def get_output():
     return VARS['output']

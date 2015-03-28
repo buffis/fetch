@@ -12,14 +12,14 @@ class TestFunctions(unittest.TestCase):
     def test_fetchaction_get(self):
         name = "test"
         action = FetchAction(name, "GET", TEST_URL)
-        fetchinterpreter.fetchaction(action)
+        fetchinterpreter.handle_line(action)
         self.assertEquals("GET", fetchinterpreter.VARS[name].method)
         self.assertEquals(TEST_URL, fetchinterpreter.VARS[name].url, TEST_URL)
 
     def test_fetchaction_post(self):
         name = "test"
         action = FetchAction(name, "POST", TEST_URL)
-        fetchinterpreter.fetchaction(action)
+        fetchinterpreter.handle_line(action)
         self.assertEquals("POST", fetchinterpreter.VARS[name].method)
         self.assertEquals(TEST_URL, fetchinterpreter.VARS[name].url, TEST_URL)
 
@@ -31,7 +31,7 @@ class TestFunctions(unittest.TestCase):
             "world"
         ])
         action = CoarseFilterAction("x", BasicFilterExpression("starts","hello"), "y")
-        fetchinterpreter.coarsefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(2, len(output))
         self.assertTrue("hello world" in output)
@@ -45,7 +45,7 @@ class TestFunctions(unittest.TestCase):
             "world"
         ])
         action = CoarseFilterAction("x", BasicFilterExpression("ends","hello"), "y")
-        fetchinterpreter.coarsefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(2, len(output))
         self.assertTrue("world hello" in output)
@@ -60,7 +60,7 @@ class TestFunctions(unittest.TestCase):
             "world"
         ])
         action = CoarseFilterAction("x", BasicFilterExpression("contains","d he"), "y")
-        fetchinterpreter.coarsefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(1, len(output))
         self.assertTrue("world hello" in output)
@@ -73,7 +73,7 @@ class TestFunctions(unittest.TestCase):
             "foobar"
         ])
         action = CoarseFilterAction("x", BasicFilterExpression("matches","[A-Z]+100[ABC]"), "y")
-        fetchinterpreter.coarsefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(2, len(output))
         self.assertTrue("HELLO100B" in output)
@@ -87,7 +87,7 @@ class TestFunctions(unittest.TestCase):
             "world"
         ])
         action = CoarseFilterAction("x", BasicFilterExpression("length",">5"), "y")
-        fetchinterpreter.coarsefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(3, len(output))
         self.assertTrue("hello world" in output)
@@ -102,7 +102,7 @@ class TestFunctions(unittest.TestCase):
             "world"
         ])
         action = CoarseFilterAction("x", BasicFilterExpression("length","<6"), "y")
-        fetchinterpreter.coarsefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(1, len(output))
         self.assertTrue("world" in output)
@@ -115,7 +115,7 @@ class TestFunctions(unittest.TestCase):
             "world"
         ])
         action = CoarseFilterAction("x", BasicFilterExpression("length","=5"), "y")
-        fetchinterpreter.coarsefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(1, len(output))
         self.assertTrue("world" in output)
@@ -130,7 +130,7 @@ class TestFunctions(unittest.TestCase):
             "world"
         ])
         action = FineFilterAction("x", BasicFilterExpression("after","hell"), "y")
-        fetchinterpreter.finefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(4, len(output))
         self.assertEquals(["o world", "o", "o hello", ""], output)
@@ -143,7 +143,7 @@ class TestFunctions(unittest.TestCase):
             "world"
         ])
         action = FineFilterAction("x", BasicFilterExpression("before","orl"), "y")
-        fetchinterpreter.finefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(4, len(output))
         self.assertEquals(["hello w", "w", "hello hello", "w"], output)
@@ -156,7 +156,7 @@ class TestFunctions(unittest.TestCase):
             "world"
         ])
         action = FineFilterAction("x", BasicFilterExpression("afterpos","3"), "y")
-        fetchinterpreter.finefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(4, len(output))
         self.assertEquals(["lo world", "ld hello", "lo hello", "ld"], output)
@@ -169,7 +169,7 @@ class TestFunctions(unittest.TestCase):
             "world"
         ])
         action = FineFilterAction("x", BasicFilterExpression("beforepos","3"), "y")
-        fetchinterpreter.finefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(["hel", "wor", "hel", "wor"], output)
 
@@ -182,7 +182,7 @@ class TestFunctions(unittest.TestCase):
             "world world"
         ])
         action = FineFilterAction("x", BasicFilterExpression("exclude","world"), "y")
-        fetchinterpreter.finefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(["hello ", " hello", "hello hello", "", " "], output)
 
@@ -194,7 +194,7 @@ class TestFunctions(unittest.TestCase):
             "hello <p>hello</p><img src='pic.jpg'/>world",
         ])
         action = FineFilterAction("x", BasicFilterExpression("striptags","img"), "y")
-        fetchinterpreter.finefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals([
             "hello <p>foobar</p> world",
@@ -210,7 +210,7 @@ class TestFunctions(unittest.TestCase):
             "hello <p>hello</p><img src='pic.jpg'/>world",
         ])
         action = FineFilterAction("x", BasicFilterExpression("striptags","p,img"), "y")
-        fetchinterpreter.finefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals([
             "hello  world",
@@ -228,7 +228,7 @@ class TestFunctions(unittest.TestCase):
         action = CoarseFilterAction("x",
                                     NegFilterExpression(BasicFilterExpression("starts","hello")),
                                     "y")
-        fetchinterpreter.coarsefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(["world hello", "world"], output)
 
@@ -247,7 +247,7 @@ class TestFunctions(unittest.TestCase):
                                         "|"
                                     ),
                                     "y")
-        fetchinterpreter.coarsefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals([
             "hello world",
@@ -270,7 +270,7 @@ class TestFunctions(unittest.TestCase):
                                         "&"
                                     ),
                                     "y")
-        fetchinterpreter.coarsefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(["hello goodbye"], output)
 
@@ -289,14 +289,14 @@ class TestFunctions(unittest.TestCase):
                                         "&"
                                     ),
                                     "y")
-        fetchinterpreter.coarsefilteraction(action)
+        fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals([], output)
 
     def test_assignment(self):
         fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper(["hello world"])
         action = OutputAssignment("x", "y")
-        fetchinterpreter.outputassignment(action)
+        fetchinterpreter.handle_line(action)
         self.assertTrue("x" in fetchinterpreter.VARS)
         self.assertEquals(["hello world"], fetchinterpreter.VARS["x"].output())
 
@@ -304,14 +304,14 @@ class TestFunctions(unittest.TestCase):
         fetchinterpreter.VARS["y1"] = fetchinterpreter.TextWrapper(["hello world"])
         fetchinterpreter.VARS["y2"] = fetchinterpreter.TextWrapper(["goodbye world"])
         action = OutputAssignment("x", ListPlus("y1", "y2"))
-        fetchinterpreter.outputassignment(action)
+        fetchinterpreter.handle_line(action)
         self.assertTrue("x" in fetchinterpreter.VARS)
         self.assertEquals(["hello world", "goodbye world"], fetchinterpreter.VARS["x"].output())
 
     def test_assignment_valueat(self):
         fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper(["hello", "world", "goodbye"])
         action = OutputAssignment("x", ListAt("y", "1"))
-        fetchinterpreter.outputassignment(action)
+        fetchinterpreter.handle_line(action)
         self.assertTrue("x" in fetchinterpreter.VARS)
         self.assertEquals(["world"], fetchinterpreter.VARS["x"].output())
 
@@ -319,7 +319,7 @@ class TestFunctions(unittest.TestCase):
         fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper(["hello", "world", "goodbye"])
         action = OutputAssignment("x", ListAt("y", "10"))
         try:
-            fetchinterpreter.outputassignment(action)
+            fetchinterpreter.handle_line(action)
             self.fail("Expected failure")
         except SyntaxError:
             pass # Expected
@@ -327,7 +327,7 @@ class TestFunctions(unittest.TestCase):
     def test_assignment_dict(self):
         fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper(["hello world"])
         action = OutputAssignment("x", {"z" : "y"})
-        fetchinterpreter.outputassignment(action)
+        fetchinterpreter.handle_line(action)
         self.assertTrue("x" in fetchinterpreter.VARS)
         self.assertTrue("z" in fetchinterpreter.VARS["x"])
         self.assertEquals(["hello world"], fetchinterpreter.VARS["x"]["z"].output())
@@ -336,7 +336,7 @@ class TestFunctions(unittest.TestCase):
         fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper(["hello world"])
         fetchinterpreter.VARS["x"] = {}
         action = OutputAssignment(DictAt("x","z"), "y")
-        fetchinterpreter.outputassignment(action)
+        fetchinterpreter.handle_line(action)
         self.assertEquals(["hello world"], fetchinterpreter.VARS["x"]["z"].output())
 
 if __name__ == '__main__':
