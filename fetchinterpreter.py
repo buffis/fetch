@@ -4,6 +4,10 @@ import requests
 
 # TODO: Error handling on raised exceptions
 
+class InterpreterException(Exception):
+    def __init__(self, msg):
+        return Exception.__init__(self, msg)
+
 class TextWrapper(object):
     def __init__(self, lines):
         self.lines = lines
@@ -23,7 +27,7 @@ class TextWrapper(object):
     def __getitem__(self, item):
         pos = int(item)
         if pos > (len(self.lines) - 1):
-            raise SyntaxError("Position %d is out of range" % pos)
+            raise InterpreterException("Position %d is out of range" % pos)
         return TextWrapper([self.output()[pos]])
 
 class UrlWrapper(object):
@@ -47,7 +51,7 @@ class UrlWrapper(object):
                                 headers=self.headers,
                                 cookies=self.cookies)
         else:
-            raise SyntaxError("Illegal request method: " + self.method)
+            raise InterpreterException("Illegal request method: " + self.method)
 
         if req.status_code != 200:
              print "FAILED"
@@ -78,7 +82,7 @@ def modifyurlaction(action):
         "COOKIE" : "cookies"}
     field = field_map.get(action.method, None)
     if field is None:
-        raise SyntaxError("Invalid field: " + action.method)
+        raise InterpreterException("Invalid field: " + action.method)
     getattr(VARS[action.name], field)[action.key] = action.value.strip("'")
     
 ###################### END FETCH SECTION ###################### 
@@ -131,7 +135,7 @@ def outputassignment(action):
     elif type(action.name) == DictAt:
         VARS[action.name.d][action.name.at] = outputassignment_right(action.value)
     else:
-        raise SyntaxError("Unknown type: " + str(type(action.name)))
+        raise InterpreterException("Unknown type: " + str(type(action.name)))
 
 def outputassignment_right(value):
     if type(value) == ListPlus:
@@ -146,7 +150,7 @@ def outputassignment_right(value):
     elif type(value) == str:
         return VARS[value]
     else:
-        raise SyntaxError("Unknown type: " + str(type(value)))
+        raise InterpreterException("Unknown type: " + str(type(value)))
 
 ##################### END OUTPUT SECTION #######################
 

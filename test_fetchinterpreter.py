@@ -321,7 +321,7 @@ class TestFunctions(unittest.TestCase):
         try:
             fetchinterpreter.handle_line(action)
             self.fail("Expected failure")
-        except SyntaxError:
+        except fetchinterpreter.InterpreterException:
             pass # Expected
 
     def test_assignment_dict(self):
