@@ -6,6 +6,7 @@ class RequestHandler(object):
 
 class HttpRequestHandler(RequestHandler):
     def get(self, url, params={}, headers={}, cookies={}):
+        self._timeout_seconds = 5 # Maybe allow setting this?
         return self._do_request(requests.get, url, params=params, headers=headers, cookies=cookies)
 
     def post(self, url, params={}, headers={}, cookies={}):
@@ -13,7 +14,7 @@ class HttpRequestHandler(RequestHandler):
 
     def _do_request(self, method, url, params={}, headers={}, cookies={}):
         try:
-            req = method(url, params=params, headers=headers, cookies=cookies, timeout=5)
+            req = method(url, params=params, headers=headers, cookies=cookies, timeout=self._timeout_seconds)
         except Exception:
             raise RequestException("Error calling url: %s", url)
         if req.status_code != 200:
