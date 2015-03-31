@@ -1,8 +1,17 @@
 from parseractions import *
 from fetchfilters import *
-import requests
+from requesthandler import HttpRequestHandler
 
 # TODO: Error handling on raised exceptions
+
+# Request handler that does the HTTP requests.
+# Defaults to using a HTTP request handler that uses the requests library, but can be mocked out
+# for tests.
+REQUEST_HANDLER = HttpRequestHandler()
+
+def inject_requesthandler_for_test(handler):
+    global REQUEST_HANDLER
+    REQUEST_HANDLER = handler
 
 class InterpreterException(Exception):
     def __init__(self, msg):
@@ -30,6 +39,9 @@ class TextWrapper(object):
             raise InterpreterException("Position %d is out of range" % pos)
         return TextWrapper([self.output()[pos]])
 
+    def __str__(self):
+        return "TextWrapper with lines:\n" + "\n".join(self.lines) + "\nENDOFTextWrapper"
+
 class UrlWrapper(object):
     def __init__(self, method, url):
         self.method = method
@@ -40,23 +52,21 @@ class UrlWrapper(object):
         self.text_wrapper = None
         
     def do_request(self):
+        global REQUEST_HANDLER
         if self.method == "GET":
-            req = requests.get(self.url,
-                               params=self.params,
-                               headers=self.headers,
-                               cookies=self.cookies)
+            req = REQUEST_HANDLER.get(self.url,
+                                      params=self.params,
+                                      headers=self.headers,
+                                      cookies=self.cookies)
         elif self.method == "POST":
-            req = requests.post(self.url,
-                                params=self.params,
-                                headers=self.headers,
-                                cookies=self.cookies)
+            req = REQUEST_HANDLER.post(self.url,
+                                       params=self.params,
+                                       headers=self.headers,
+                                       cookies=self.cookies)
         else:
             raise InterpreterException("Illegal request method: " + self.method)
 
-        if req.status_code != 200:
-             print "FAILED"
-             return
-        self.text_wrapper = TextWrapper(req.text.split('\n'))
+        self.text_wrapper = TextWrapper(req.split('\n'))
 
     def filter(self, exp):
         if not self.text_wrapper:
@@ -153,7 +163,6 @@ def outputassignment_right(value):
         raise InterpreterException("Unknown type: " + str(type(value)))
 
 ##################### END OUTPUT SECTION #######################
-
 
 def handle_line(line):
     action_map = {
