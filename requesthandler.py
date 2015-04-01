@@ -21,7 +21,6 @@ class HttpRequestHandler(RequestHandler):
             raise RequestException("Status code: %d for %s" % (req.status_code, url))
         return req.text
 
-# TODO: Verify this works.
 class TestRequestHandler(RequestHandler):
     def __init__(self, return_data):
         self.requests_sent = []
