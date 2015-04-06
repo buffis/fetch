@@ -15,6 +15,7 @@ I don't want this,
 or this."""
         fetch_data = """other <- 'http://www.coolapi.com/getstuff'
 x = [contains:'line I want'] other
+x = {after:' is '} x
 output = x
 """
         fetchinterpreter.inject_requesthandler_for_test(TestRequestHandler(return_data))
@@ -22,5 +23,5 @@ output = x
         for line in data:
             fetchinterpreter.handle_line(line)
         output = fetchinterpreter.get_output().output()
-        self.assertEquals(["This is the line I want to fetch."], output)
+        self.assertEquals(["the line I want to fetch."], output)
 
