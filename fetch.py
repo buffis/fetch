@@ -17,22 +17,6 @@ def print_lexed():
         if not tok: break      # No more input
         print tok
 
-def print_compiled():
-    import pycompiler
-    compiled = fetchparser.parse_input(open("sample.fetch").read())
-    
-    data = ""
-    data += pycompiler.compile_deps()
-    for line in compiled:
-        data += pycompiler.compile_line(line)
-    data += pycompiler.compile_finish()
-
-    print data
-    # Write Python code to a file
-    f=open("fetchout.py","w")
-    f.write(data)
-    f.close()
-
 def interpret():
     import fetchinterpreter
     compiled = fetchparser.parse_input(open("sample.fetch").read())
@@ -54,11 +38,6 @@ if __name__ == "__main__":
         print "Terminating"
         import sys
         sys.exit(1)
-        
-    #print "\n--Compiled--"
-    #print_compiled()
-    #print "\n--Executing--"
-    #execfile("fetchout.py")
 
     print "\n--Interpreting--"
     interpret()
