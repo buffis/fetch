@@ -1,8 +1,12 @@
 from parseractions import *
 from fetchfilters import *
 from requesthandler import HttpRequestHandler
+from BeautifulSoup import BeautifulSoup
 
 # TODO: Error handling on raised exceptions
+
+FILTER_MODE_TEXT = "filter-mode-text"
+FILTER_MODE_HTML = "filter-mode-html"
 
 # Request handler that does the HTTP requests.
 # Defaults to using a HTTP request handler that uses the requests library, but can be mocked out
@@ -17,23 +21,60 @@ class InterpreterException(Exception):
     def __init__(self, msg):
         return Exception.__init__(self, msg)
 
+class HtmlWrapper(object):
+    def __init__(self, soups):
+        self.soups = soups
+
+    def filter(self, exp):
+        if exp.mode != FILTER_MODE_HTML:
+            raise InterpreterException("Expected HTML based filter.")
+        filtered_soups = []
+        for soup in self.soups:
+            children = soup.findChildren(recursive=False)
+            matching_children = filter(exp.f, children)
+            filtered_soups += matching_children  # No children were harmed making this soup.
+        return HtmlWrapper(filtered_soups)
+
+    def map(self, exp):
+        if exp.mode != FILTER_MODE_HTML:
+            raise InterpreterException("Expected HTML based filter.")
+        text_lines = []
+        for soup in self.soups:
+            text_lines.append(exp.f(soup))
+        return TextWrapper(text_lines)
+
+    def output(self):
+        raise InterpreterException("HTML needs to be text-filtered for output.")
+
+    def as_text(self):
+        raise NotImplementedError("Not possible currently")
+
 class TextWrapper(object):
     def __init__(self, lines):
         self.lines = lines
 
     def filter(self, exp):
-        return TextWrapper(filter(exp, self.lines))
+        if exp.mode == FILTER_MODE_TEXT:
+            return TextWrapper(filter(exp.f, self.lines))
+        if exp.mode == FILTER_MODE_HTML:
+            return self.as_html().filter(exp)
 
     def map(self, exp):
-        return TextWrapper(map(exp, self.lines))
+        if exp.mode == FILTER_MODE_TEXT:
+            return TextWrapper(map(exp.f, self.lines))
+        if exp.mode == FILTER_MODE_HTML:
+            return self.as_html().map(exp)
 
     def output(self):
         return self.lines
 
-    def __add__(self, other):
+    def as_html(self):
+        return HtmlWrapper([BeautifulSoup("".join(self.lines))])
+
+    def __add__(self, other):  # TODO: is this needed?
         return TextWrapper(self.output() + other.output())
 
-    def __getitem__(self, item):
+    def __getitem__(self, item):  # TODO: is this needed?
         pos = int(item)
         if pos > (len(self.lines) - 1):
             raise InterpreterException("Position %d is out of range" % pos)
@@ -99,38 +140,58 @@ def modifyurlaction(action):
 
 ####################### FILTER SECTION ########################
 
+class FilterWrapper(object):
+    def __init__(self, f, mode):
+        self.f = f
+        self.mode = mode
+
+    def negated(self):
+        f = self.f
+        return FilterWrapper(lambda x: not f(x), self.mode)
+
+    def and_expression(self, exp):
+        f1, f2 = self.f, exp.f
+        return FilterWrapper(lambda x: f1(x) and f2(x), self.mode)
+
+    def or_expression(self, exp):
+        f1, f2 = self.f, exp.f
+        return FilterWrapper(lambda x: f1(x) or f2(x), self.mode)
+
 def filter_expression(exp, filter_map):
     t = type(exp)
     if t == BasicFilterExpression:
-        return filter_map[exp.key](exp.arg.strip("'"))
+        filter_f, mode = filter_map[exp.key]
+        f = filter_f(exp.arg.strip("'"))
+        return FilterWrapper(f, mode)
     if t == NegFilterExpression:
-        return lambda x: not filter_expression(exp.exp, filter_map)(x)
+        return filter_expression(exp.exp, filter_map).negated()
     if t == CombinedFilterExpression:
         f1 = filter_expression(exp.exp1, filter_map)
         f2 = filter_expression(exp.exp2, filter_map)
-        if exp.op == "|": return lambda x: f1(x) or f2(x)
-        if exp.op == "&": return lambda x: f1(x) and f2(x)
+        if exp.op == "|": return f1.or_expression(f2)
+        if exp.op == "&": return f1.and_expression(f2)
 
 def coarsefilteraction(action):
     coarse_filter_map = {
-        "starts" : starts_filter,
-        "ends" : ends_filter,
-        "contains" : contains_filter,
-        "matches" : matches_filter,
-        "length" : length_filter,
+        "starts":    (starts_filter, FILTER_MODE_TEXT),
+        "ends":      (ends_filter, FILTER_MODE_TEXT),
+        "contains":  (contains_filter, FILTER_MODE_TEXT),
+        "matches":   (matches_filter, FILTER_MODE_TEXT),
+        "length":    (length_filter, FILTER_MODE_TEXT),
+        "children":  (children_filter, FILTER_MODE_HTML),
     }
     f = filter_expression(action.expression, coarse_filter_map)
     VARS[action.name] = VARS[action.indata].filter(f)
 
 def finefilteraction(action):
     fine_filter_map = {
-        "after" : after_filter,
-        "before" : before_filter,
-        "afterpos" : afterpos_filter,
-        "beforepos" : beforepos_filter,
-        "exclude" : exclude_filter,
-        "striptags" : striptags_filter,
-        #"text" : text_filter, # TODO: Implement
+        "after":     (after_filter, FILTER_MODE_TEXT),
+        "before":    (before_filter, FILTER_MODE_TEXT),
+        "afterpos":  (afterpos_filter, FILTER_MODE_TEXT),
+        "beforepos": (beforepos_filter, FILTER_MODE_TEXT),
+        "exclude":   (exclude_filter, FILTER_MODE_TEXT),
+        "striptags": (striptags_filter, FILTER_MODE_TEXT),
+        "text":      (text_filter, FILTER_MODE_HTML),
     }
     f = filter_expression(action.expression, fine_filter_map)
     VARS[action.name] = VARS[action.indata].map(f)

@@ -23,6 +23,9 @@ def length_filter(arg):
     return t
     #TODO: Handle error
 
+def children_filter(arg):
+    return lambda x: x.name == arg
+
 # Fine filters:
 def after_filter(arg): return lambda x: x[x.find(arg)+len(arg):] if arg in x else ''
 def before_filter(arg): return lambda x: x[:x.find(arg)] if arg in x else x
@@ -39,4 +42,5 @@ def striptags_filter(arg):
         return subbed
     return lambda x: striptags(x, arg)
 
-def text_filter(arg): return lambda x: x #TODO
+def text_filter(arg):
+    return lambda x: x.getText()
