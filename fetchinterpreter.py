@@ -30,7 +30,7 @@ class HtmlWrapper(object):
             raise InterpreterException("Expected HTML based filter.")
         filtered_soups = []
         for soup in self.soups:
-            children = soup.findChildren(recursive=False)
+            children = soup.findChildren(recursive=exp.f.recursive)
             matching_children = filter(exp.f, children)
             filtered_soups += matching_children  # No children were harmed making this soup.
         return HtmlWrapper(filtered_soups)
@@ -179,6 +179,7 @@ def coarsefilteraction(action):
         "matches":   (matches_filter, FILTER_MODE_TEXT),
         "length":    (length_filter, FILTER_MODE_TEXT),
         "children":  (children_filter, FILTER_MODE_HTML),
+        "findall":   (findall_filter, FILTER_MODE_HTML),
     }
     f = filter_expression(action.expression, coarse_filter_map)
     VARS[action.name] = VARS[action.indata].filter(f)
@@ -192,6 +193,7 @@ def finefilteraction(action):
         "exclude":   (exclude_filter, FILTER_MODE_TEXT),
         "striptags": (striptags_filter, FILTER_MODE_TEXT),
         "text":      (text_filter, FILTER_MODE_HTML),
+        "rawtext":   (rawtext_filter, FILTER_MODE_HTML),
     }
     f = filter_expression(action.expression, fine_filter_map)
     VARS[action.name] = VARS[action.indata].map(f)

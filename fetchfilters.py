@@ -24,7 +24,15 @@ def length_filter(arg):
     #TODO: Handle error
 
 def children_filter(arg):
-    return lambda x: x.name == arg
+    f = lambda x: x.name == arg
+    f.recursive = False
+    return f
+
+def findall_filter(arg):
+    f = lambda x: x.name == arg
+    f.recursive = True
+    return f
+
 
 # Fine filters:
 def after_filter(arg): return lambda x: x[x.find(arg)+len(arg):] if arg in x else ''
@@ -44,3 +52,6 @@ def striptags_filter(arg):
 
 def text_filter(arg):
     return lambda x: x.getText()
+
+def rawtext_filter(arg):
+    return lambda x: str(x)

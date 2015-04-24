@@ -1,6 +1,7 @@
 import fetchinterpreter
 import unittest
 from parseractions import *
+from BeautifulSoup import BeautifulSoup
 
 TEST_URL = "http://stackoverflow.com/questions/8221296/how-can-i-download-and-read-a-url-with-universal-newlines"
 
@@ -217,6 +218,28 @@ class TestFunctions(unittest.TestCase):
             "hello  world",
             "hello  world",
             "hello world"], output)
+
+    def test_filter_html_children(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.HtmlWrapper(
+            [BeautifulSoup("<html><head><title>Page title</title></head></html>")])
+        action = CoarseFilterAction("x", BasicFilterExpression("children","html"), "y")
+        fetchinterpreter.handle_line(action)
+        action = FineFilterAction("x", BasicFilterExpression("rawtext",""), "x")
+        fetchinterpreter.handle_line(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(
+            ["<html><head><title>Page title</title></head></html>"], output)
+
+    def test_filter_html_findall_tag(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.HtmlWrapper(
+            [BeautifulSoup("<html><body><p>p1</p><p>p2</p><p>p3</p></body></html>")])
+        action = CoarseFilterAction("x", BasicFilterExpression("findall","p"), "y")
+        fetchinterpreter.handle_line(action)
+        action = FineFilterAction("x", BasicFilterExpression("rawtext",""), "x")
+        fetchinterpreter.handle_line(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(
+            ['<p>p1</p>', '<p>p2</p>', '<p>p3</p>'], output)
 
     def test_neg_coarse_filter(self):
         fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
