@@ -1,0 +1,11 @@
+~~~~Fetch style guide~~~~
+
+The Python in Fetch should comply with PEP 8, with the following modifications.
+- Number of newlines between top-level methods/classes can be 0-2 depending on what looks nicer.
+
+These modifications are purely motivated by my own preference.
+Any code not complying to this style guide should be considered a bug and bug reports will be appreciated.
+
+NOTE: There's a bunch of violations currently. Cleanup sweep needed!
+
+- buffi
