@@ -1,9 +1,13 @@
 ~~~~Fetch style guide~~~~
 
 The Python in Fetch should comply with PEP 8, with the following modifications.
-- Number of newlines between top-level methods/classes can be 0-2 depending on what looks nicer.
+- Number of newlines between methods/classes can be 0-2 depending on what looks nice.
+- One-liner functions does not require linebreak after colon.
+        Example:
+        def contains_filter(arg): return lambda x: arg in x
 
-These modifications are purely motivated by my own preference.
+
+These changes from PEP 8 are purely motivated by my own preference.
 Any code not complying to this style guide should be considered a bug and bug reports will be appreciated.
 
 NOTE: There's a bunch of violations currently. Cleanup sweep needed!

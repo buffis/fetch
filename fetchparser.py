@@ -223,4 +223,4 @@ if __name__ == "__main__":
 
     # Compare the manually listed rules being printed with all rules in this file.
     verify_with_global_rules()
-    
+

@@ -3,7 +3,7 @@ import unittest
 from parseractions import *
 from BeautifulSoup import BeautifulSoup
 
-TEST_URL = "http://stackoverflow.com/questions/8221296/how-can-i-download-and-read-a-url-with-universal-newlines"
+TEST_URL = "http://example.com/cool_api"
 
 class TestFunctions(unittest.TestCase):
     def setUp(self):
