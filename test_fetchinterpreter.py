@@ -241,6 +241,17 @@ class TestFunctions(unittest.TestCase):
         self.assertEquals(
             ['<p>p1</p>', '<p>p2</p>', '<p>p3</p>'], output)
 
+    def test_filter_html_attr(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.HtmlWrapper(
+            [BeautifulSoup("<html><body><img src='things'/><img srcs='stuff'/></body></html>")])
+        action = CoarseFilterAction("x", BasicFilterExpression("findall","img"), "y")
+        fetchinterpreter.handle_line(action)
+        action = FineFilterAction("x", BasicFilterExpression("attr","src"), "x")
+        fetchinterpreter.handle_line(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(
+            ["things", ""], output)
+
     def test_neg_coarse_filter(self):
         fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
             "hello world",
