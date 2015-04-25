@@ -24,9 +24,6 @@ def interpret():
         fetchinterpreter.handle_line(line)
     print "Output", fetchinterpreter.get_output()
 
-def execute_compiled():
-    execfile("fetchout.py")
-
 if __name__ == "__main__":
     print "\n--Lexed--"
     print_lexed()
