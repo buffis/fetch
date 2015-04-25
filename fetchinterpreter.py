@@ -194,6 +194,7 @@ def finefilteraction(action):
         "striptags": (striptags_filter, FILTER_MODE_TEXT),
         "text":      (text_filter, FILTER_MODE_HTML),
         "rawtext":   (rawtext_filter, FILTER_MODE_HTML),
+        "attr":      (attr_filter, FILTER_MODE_HTML),
     }
     f = filter_expression(action.expression, fine_filter_map)
     VARS[action.name] = VARS[action.indata].map(f)

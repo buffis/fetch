@@ -55,3 +55,11 @@ def text_filter(arg):
 
 def rawtext_filter(arg):
     return lambda x: str(x)
+
+def attr_filter(arg):
+    def f(x):
+        try:
+            return x[arg]
+        except KeyError:
+            return ""
+    return f
