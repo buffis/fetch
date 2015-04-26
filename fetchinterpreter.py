@@ -1,3 +1,4 @@
+import json
 from parseractions import *
 from fetchfilters import *
 from requesthandler import HttpRequestHandler
@@ -81,7 +82,7 @@ class TextWrapper(object):
         return TextWrapper([self.output()[pos]])
 
     def __str__(self):
-        return "TextWrapper with lines:\n" + "\n".join(self.lines) + "\nENDOFTextWrapper"
+        return str(self.lines)
 
 class UrlWrapper(object):
     def __init__(self, method, url):
@@ -161,7 +162,7 @@ def filter_expression(exp, filter_map):
     t = type(exp)
     if t == BasicFilterExpression:
         filter_f, mode = filter_map[exp.key]
-        f = filter_f(exp.arg.strip("'"))
+        f = filter_f(exp.arg.strip("'") if exp.arg else '')
         return FilterWrapper(f, mode)
     if t == NegFilterExpression:
         return filter_expression(exp.exp, filter_map).negated()
@@ -207,7 +208,7 @@ def outputassignment(action):
     if type(action.name) == str:
         VARS[action.name] = outputassignment_right(action.value)
     elif type(action.name) == DictAt:
-        VARS[action.name.d][action.name.at] = outputassignment_right(action.value)
+        VARS[action.name.d][action.name.at.strip("'")] = outputassignment_right(action.value)
     else:
         raise InterpreterException("Unknown type: " + str(type(action.name)))
 
@@ -219,7 +220,7 @@ def outputassignment_right(value):
     elif type(value) == dict:
         return_dict = {}
         for k, v in value.items():
-            return_dict[k] = VARS[v]
+            return_dict[k.strip("'")] = VARS[v]
         return return_dict
     elif type(value) == str:
         return VARS[value]
@@ -238,5 +239,17 @@ def handle_line(line):
     }
     action_map[type(line)](line)
 
+def format_output(var):
+    if type(var) == TextWrapper:
+        return var.output()
+    elif type(var) == dict:
+        d = {}
+        for key, value in var.items():
+            d[key] = format_output(value)
+        return d
+
 def get_output():
-    return VARS['output']
+    return json.dumps(format_output(VARS['output']),
+               sort_keys=False,
+               indent=2,
+               separators=(',', ': '))

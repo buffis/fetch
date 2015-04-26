@@ -1,0 +1,6 @@
+github <- 'https://github.com/buffis?tab=repositories'
+repolist = [findall: '.repo-list-item'] github
+repolistnames = [findall: '.repo-list-name'] repolist
+repodescriptions = [children: '.repo-list-description'] repolist
+repolinks = [children: 'a'] repolistnames
+output = {text} repolinks

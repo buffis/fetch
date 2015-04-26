@@ -1,0 +1,9 @@
+github <- 'https://github.com/buffis?tab=repositories'
+repolist = [findall: '.repo-list-item'] github
+repolistnames = [findall: '.repo-list-name'] repolist
+repodescriptions = [children: '.repo-list-description'] repolist
+repolinks = [children: 'a'] repolistnames
+names = {text: ''} repolinks
+hrefs = {attr: 'href'} repolinks
+descriptions = {text: ''} repodescriptions
+output = dict{'names': names, 'hrefs': hrefs, 'descriptions': descriptions}

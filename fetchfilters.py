@@ -49,13 +49,41 @@ def striptags_filter(arg):
     return lambda x: striptags(x, arg)
 
 # Coarse HTML filters:
+
+def _match_tag(arg):
+    """
+    Helper method for "children" and "findall" filters, used to match a tag.
+    Expects a tag name and/or class. If class is specified, a dot is used as separator.
+    Example inputs: "p", "img", "span.classname", "img.header", ".repo".
+    """
+    if "." in arg:
+        name, cls = arg.split(".")
+    else:
+        # No class specified. Just a tag.
+        name = arg
+        cls = None
+    def f(x):
+        if name:
+            matching_name = x.name == name
+        else:
+            matching_name = True
+        if cls:
+            try:
+                matching_class = cls in x["class"].split()
+                return matching_name and matching_class
+            except KeyError:
+                return False  # No class!
+        else:
+            return matching_name
+    return f
+
 def children_filter(arg):
-    f = lambda x: x.name == arg
+    f = _match_tag(arg)
     f.recursive = False
     return f
 
 def findall_filter(arg):
-    f = lambda x: x.name == arg
+    f = _match_tag(arg)
     f.recursive = True
     return f
 
