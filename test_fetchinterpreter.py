@@ -230,6 +230,27 @@ class TestFunctions(unittest.TestCase):
         self.assertEquals(
             ["<html><head><title>Page title</title></head></html>"], output)
 
+    def test_filter_html_children_with_class(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.HtmlWrapper(
+            [BeautifulSoup("<p class='a'>p1</p><p class='a'>p2</p><p>p3</p>")])
+        action = CoarseFilterAction("x", BasicFilterExpression("children","p.a"), "y")
+        fetchinterpreter.handle_line(action)
+        action = FineFilterAction("x", BasicFilterExpression("rawtext",""), "x")
+        fetchinterpreter.handle_line(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(
+            ['<p class="a">p1</p>', '<p class="a">p2</p>'], output)
+
+    def test_filter_html_findall_children_with_class_too_deep(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.HtmlWrapper(
+            [BeautifulSoup("<html><body><p class='a'>p1</p><p class='b'>p2</p><p>p3</p></body></html>")])
+        action = CoarseFilterAction("x", BasicFilterExpression("children","p.a"), "y")
+        fetchinterpreter.handle_line(action)
+        action = FineFilterAction("x", BasicFilterExpression("rawtext",""), "x")
+        fetchinterpreter.handle_line(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals([], output)
+
     def test_filter_html_findall_tag(self):
         fetchinterpreter.VARS["y"] = fetchinterpreter.HtmlWrapper(
             [BeautifulSoup("<html><body><p>p1</p><p>p2</p><p>p3</p></body></html>")])
@@ -240,6 +261,17 @@ class TestFunctions(unittest.TestCase):
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(
             ['<p>p1</p>', '<p>p2</p>', '<p>p3</p>'], output)
+
+    def test_filter_html_findall_tag_with_class(self):
+        fetchinterpreter.VARS["y"] = fetchinterpreter.HtmlWrapper(
+            [BeautifulSoup("<html><body><p class='a'>p1</p><p class='b'>p2</p><p>p3</p></body></html>")])
+        action = CoarseFilterAction("x", BasicFilterExpression("findall","p.a"), "y")
+        fetchinterpreter.handle_line(action)
+        action = FineFilterAction("x", BasicFilterExpression("rawtext",""), "x")
+        fetchinterpreter.handle_line(action)
+        output = fetchinterpreter.VARS["x"].output()
+        self.assertEquals(
+            ['<p class="a">p1</p>'], output)
 
     def test_filter_html_attr(self):
         fetchinterpreter.VARS["y"] = fetchinterpreter.HtmlWrapper(
