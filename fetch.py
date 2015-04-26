@@ -1,40 +1,17 @@
+#!/usr/bin/python
+import sys
 import fetchparser
 
-def print_parsed():
-    for line in fetchparser.parse_input(open("sample.fetch").read()):
-        print line
-
-def print_lexed():
-    import fetchlexer
-    l=fetchlexer.get_lexer()
-
-    # Give the lexer some input
-    l.input(open("sample.fetch").read())
-
-    # Tokenize
-    while True:
-        tok = l.token()
-        if not tok: break      # No more input
-        print tok
-
-def interpret():
+def interpret(filename):
     import fetchinterpreter
-    compiled = fetchparser.parse_input(open("sample.fetch").read())
+    compiled = fetchparser.parse_input(open(filename).read())
     for line in compiled:
         fetchinterpreter.handle_line(line)
     print "Output", fetchinterpreter.get_output()
 
 if __name__ == "__main__":
-    print "\n--Lexed--"
-    print_lexed()
-
-    print "\n--Parsed--"
-    try:
-        print_parsed()
-    except SyntaxError:
-        print "Terminating"
-        import sys
-        sys.exit(1)
-
     print "\n--Interpreting--"
-    interpret()
+    filename = "sample.fetch" # TODO: Remove this default prior to making public
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+    interpret(filename)
