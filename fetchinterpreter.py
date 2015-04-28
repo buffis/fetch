@@ -239,17 +239,33 @@ def handle_line(line):
     }
     action_map[type(line)](line)
 
-def format_output(var):
-    if type(var) == TextWrapper:
-        return var.output()
-    elif type(var) == dict:
-        d = {}
-        for key, value in var.items():
-            d[key] = format_output(value)
-        return d
+def get_output(mode="json"):  #shittycode
+    def json_format(output):
+        return json.dumps(output,
+                          sort_keys=False,
+                          indent=2,
+                          separators=(',', ': '))
+    def text_format(output, inline=False):  #shittycode
+        if type(output) == list:
+            if inline: return "[%s]" % ", ".join(map(text_format, output))
+            else: return "\n".join(text_format(o, True) for o in output)
+        elif type(output) in (str, unicode): return output
+        elif type(output) == dict:
+            if inline: return "{%s}" % ", ".join("%s: %s"%(k, text_format(v, True)) for (k,v) in output.items())
+            else: return "{\n%s\n}" % "\n".join("%s: %s"%(k, text_format(v, True)) for (k,v) in output.items())
+    def prepare_output(var):
+        if type(var) == TextWrapper:
+            return var.output()
+        elif type(var) == dict:
+            d = {}
+            for key, value in var.items():
+                d[key] = prepare_output(value)
+            return d
 
-def get_output():
-    return json.dumps(format_output(VARS['output']),
-               sort_keys=False,
-               indent=2,
-               separators=(',', ': '))
+    formatted_output = prepare_output(VARS['output'])
+    if mode == "json":
+        return json_format(formatted_output)
+    elif mode == "text":
+        return text_format(formatted_output)
+    else:
+        raise SyntaxError("Invalid mode: " + mode)
