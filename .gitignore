@@ -57,7 +57,6 @@ target/
 
 # PLY
 parser.out
-parsetab.py
 
 # PyCharm
 .idea
