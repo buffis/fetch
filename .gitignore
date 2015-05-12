@@ -64,3 +64,6 @@ parser.out
 # Stuff
 test.py
 fetchout.py
+
+# ZIP files
+*.zip

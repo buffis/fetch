@@ -72,7 +72,7 @@ def t_COMMENT(t):
     r'\#.*'
     pass
 
-t_ignore  = ' \t'
+t_ignore  = ' \t\r'
 
 def t_error(t):
     print "Illegal character '%s'" % t.value[0]

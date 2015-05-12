@@ -19,7 +19,10 @@ class HttpRequestHandler(RequestHandler):
             raise RequestException("Error calling url: %s", url)
         if req.status_code != 200:
             raise RequestException("Status code: %d for %s" % (req.status_code, url))
-        return req.text
+        try:
+            return req.text
+        except AttributeError:  # Older version of requests library use content instead of text
+            return req.content
 
 class TestRequestHandler(RequestHandler):
     def __init__(self, return_data):
