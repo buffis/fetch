@@ -16,7 +16,7 @@ class HttpRequestHandler(RequestHandler):
         try:
             req = method(url, params=params, headers=headers, cookies=cookies, timeout=self._timeout_seconds)
         except Exception:
-            raise RequestException("Error calling url: %s", url)
+            raise RequestException("Error when fetching from url: %s" % url)
         if req.status_code != 200:
             raise RequestException("Status code: %d for %s" % (req.status_code, url))
         try:
@@ -40,4 +40,5 @@ class TestRequestHandler(RequestHandler):
         return self.return_data
 
 class RequestException(Exception):
-    pass
+    def __init__(self, msg):
+        self.msg = msg

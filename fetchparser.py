@@ -3,6 +3,10 @@ import ply.yacc as yacc
 from fetchlexer import tokens
 from parseractions import *
 
+class ParserError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
 ############
 # Main rules
 ##########
@@ -34,8 +38,8 @@ def p_fetchline_modify(p):
 
 def p_error(p):
     "Error in syntax"
-    print "Error parsing expression: %s at line %d" % (p.value, p.lineno)
-    raise SyntaxError()
+    error_msg = "Invalid token: '%s' at line %d" % (p.value, p.lineno)
+    raise ParserError(error_msg)
 
 
 ############

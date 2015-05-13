@@ -1,7 +1,7 @@
 import json
 from parseractions import *
 from fetchfilters import *
-from requesthandler import HttpRequestHandler
+from requesthandler import HttpRequestHandler, RequestException
 from BeautifulSoup import BeautifulSoup
 
 # TODO: Error handling on raised exceptions
@@ -20,7 +20,7 @@ def inject_requesthandler_for_test(handler):
 
 class InterpreterException(Exception):
     def __init__(self, msg):
-        return Exception.__init__(self, msg)
+        self.msg = msg
 
 class HtmlWrapper(object):
     def __init__(self, soups):
@@ -95,18 +95,21 @@ class UrlWrapper(object):
         
     def do_request(self):
         global REQUEST_HANDLER
-        if self.method == "GET":
-            req = REQUEST_HANDLER.get(self.url,
-                                      params=self.params,
-                                      headers=self.headers,
-                                      cookies=self.cookies)
-        elif self.method == "POST":
-            req = REQUEST_HANDLER.post(self.url,
-                                       params=self.params,
-                                       headers=self.headers,
-                                       cookies=self.cookies)
-        else:
-            raise InterpreterException("Illegal request method: " + self.method)
+        try:
+            if self.method == "GET":
+                req = REQUEST_HANDLER.get(self.url,
+                                          params=self.params,
+                                          headers=self.headers,
+                                          cookies=self.cookies)
+            elif self.method == "POST":
+                req = REQUEST_HANDLER.post(self.url,
+                                           params=self.params,
+                                           headers=self.headers,
+                                           cookies=self.cookies)
+            else:
+                raise InterpreterException("Illegal request method: " + self.method)
+        except RequestException as e:
+            raise InterpreterException(e.msg)
 
         self.text_wrapper = TextWrapper(req.split('\n'))
 
@@ -161,6 +164,8 @@ class FilterWrapper(object):
 def filter_expression(exp, filter_map):
     t = type(exp)
     if t == BasicFilterExpression:
+        if exp.key not in filter_map:
+            raise InterpreterException("Filter '%s' does not exist, or is not allowed here" % exp.key)
         filter_f, mode = filter_map[exp.key]
         f = filter_f(exp.arg.strip("'") if exp.arg else '')
         return FilterWrapper(f, mode)
@@ -173,6 +178,9 @@ def filter_expression(exp, filter_map):
         if exp.op == "&": return f1.and_expression(f2)
 
 def coarsefilteraction(action):
+    if action.indata not in VARS:
+        raise InterpreterException("Trying to filter variable '%s' which does not exist" % action.indata)
+
     coarse_filter_map = {
         "starts":    (starts_filter, FILTER_MODE_TEXT),
         "ends":      (ends_filter, FILTER_MODE_TEXT),
@@ -186,6 +194,9 @@ def coarsefilteraction(action):
     VARS[action.name] = VARS[action.indata].filter(f)
 
 def finefilteraction(action):
+    if action.indata not in VARS:
+        raise InterpreterException("Trying to filter variable '%s' which does not exist" % action.indata)
+
     fine_filter_map = {
         "after":     (after_filter, FILTER_MODE_TEXT),
         "before":    (before_filter, FILTER_MODE_TEXT),
@@ -240,6 +251,9 @@ def handle_line(line):
     action_map[type(line)](line)
 
 def get_output(mode="json"):  #shittycode
+    if 'output' not in VARS:
+        raise InterpreterException("No output variable present. Please add a variable named 'output'.")
+
     def json_format(output):
         return json.dumps(output,
                           sort_keys=False,
@@ -268,4 +282,4 @@ def get_output(mode="json"):  #shittycode
     elif mode == "text":
         return text_format(formatted_output)
     else:
-        raise SyntaxError("Invalid mode: " + mode)
+        raise InterpreterException("Invalid output mode: " + mode + ". Valid modes are 'text' and 'json'.")
