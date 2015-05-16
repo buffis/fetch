@@ -14,13 +14,16 @@ FILTER_MODE_HTML = "filter-mode-html"
 # for tests.
 REQUEST_HANDLER = HttpRequestHandler()
 
+
 def inject_requesthandler_for_test(handler):
     global REQUEST_HANDLER
     REQUEST_HANDLER = handler
 
+
 class InterpreterException(Exception):
     def __init__(self, msg):
         self.msg = msg
+
 
 class HtmlWrapper(object):
     def __init__(self, soups):
@@ -49,6 +52,7 @@ class HtmlWrapper(object):
 
     def as_text(self):
         raise NotImplementedError("Not possible currently")
+
 
 class TextWrapper(object):
     def __init__(self, lines):
@@ -83,6 +87,7 @@ class TextWrapper(object):
 
     def __str__(self):
         return str(self.lines)
+
 
 class UrlWrapper(object):
     def __init__(self, method, url):
@@ -125,24 +130,27 @@ class UrlWrapper(object):
 
 VARS = {}
 
-######################## FETCH SECTION ######################## 
+######################## FETCH SECTION ########################
+
 
 def fetchaction(action):
     VARS[action.name] = UrlWrapper(action.method, action.url.strip("'"))
 
+
 def modifyurlaction(action):
     field_map = {
-        "PARAM"  : "params",
-        "HEADER" : "headers",
-        "COOKIE" : "cookies"}
+        "PARAM": "params",
+        "HEADER": "headers",
+        "COOKIE": "cookies"}
     field = field_map.get(action.method, None)
     if field is None:
         raise InterpreterException("Invalid field: " + action.method)
     getattr(VARS[action.name], field)[action.key] = action.value.strip("'")
     
-###################### END FETCH SECTION ###################### 
+###################### END FETCH SECTION ######################
 
 ####################### FILTER SECTION ########################
+
 
 class FilterWrapper(object):
     def __init__(self, f, mode):
@@ -161,6 +169,7 @@ class FilterWrapper(object):
         f1, f2 = self.f, exp.f
         return FilterWrapper(lambda x: f1(x) or f2(x), self.mode)
 
+
 def filter_expression(exp, filter_map):
     t = type(exp)
     if t == BasicFilterExpression:
@@ -174,8 +183,11 @@ def filter_expression(exp, filter_map):
     if t == CombinedFilterExpression:
         f1 = filter_expression(exp.exp1, filter_map)
         f2 = filter_expression(exp.exp2, filter_map)
-        if exp.op == "|": return f1.or_expression(f2)
-        if exp.op == "&": return f1.and_expression(f2)
+        if exp.op == "|":
+            return f1.or_expression(f2)
+        if exp.op == "&":
+            return f1.and_expression(f2)
+
 
 def coarsefilteraction(action):
     if action.indata not in VARS:
@@ -192,6 +204,7 @@ def coarsefilteraction(action):
     }
     f = filter_expression(action.expression, coarse_filter_map)
     VARS[action.name] = VARS[action.indata].filter(f)
+
 
 def finefilteraction(action):
     if action.indata not in VARS:
@@ -215,6 +228,7 @@ def finefilteraction(action):
 
 ####################### OUTPUT SECTION #########################
 
+
 def outputassignment(action):
     if type(action.name) == str:
         VARS[action.name] = outputassignment_right(action.value)
@@ -222,6 +236,7 @@ def outputassignment(action):
         VARS[action.name.d][action.name.at.strip("'")] = outputassignment_right(action.value)
     else:
         raise InterpreterException("Unknown type: " + str(type(action.name)))
+
 
 def outputassignment_right(value):
     if type(value) == ListPlus:
@@ -240,15 +255,17 @@ def outputassignment_right(value):
 
 ##################### END OUTPUT SECTION #######################
 
+
 def handle_line(line):
     action_map = {
-        FetchAction : fetchaction,
-        ModifyUrlAction : modifyurlaction,
-        CoarseFilterAction : coarsefilteraction,
-        FineFilterAction : finefilteraction,
-        OutputAssignment : outputassignment,
+        FetchAction: fetchaction,
+        ModifyUrlAction: modifyurlaction,
+        CoarseFilterAction: coarsefilteraction,
+        FineFilterAction: finefilteraction,
+        OutputAssignment: outputassignment,
     }
     action_map[type(line)](line)
+
 
 def get_output(mode="json"):  #shittycode
     if 'output' not in VARS:
@@ -259,14 +276,21 @@ def get_output(mode="json"):  #shittycode
                           sort_keys=False,
                           indent=2,
                           separators=(',', ': '))
+
     def text_format(output, inline=False):  #shittycode
         if type(output) == list:
-            if inline: return "[%s]" % ", ".join(map(text_format, output))
-            else: return "\n".join(text_format(o, True) for o in output)
-        elif type(output) in (str, unicode): return output
+            if inline:
+                return "[%s]" % ", ".join(map(text_format, output))
+            else:
+                return "\n".join(text_format(o, True) for o in output)
+        elif type(output) in (str, unicode):
+            return output
         elif type(output) == dict:
-            if inline: return "{%s}" % ", ".join("%s: %s"%(k, text_format(v, True)) for (k,v) in output.items())
-            else: return "{\n%s\n}" % "\n".join("%s: %s"%(k, text_format(v, True)) for (k,v) in output.items())
+            if inline:
+                return "{%s}" % ", ".join("%s: %s" % (k, text_format(v, True)) for (k,v) in output.items())
+            else:
+                return "{\n%s\n}" % "\n".join("%s: %s" % (k, text_format(v, True)) for (k,v) in output.items())
+
     def prepare_output(var):
         if type(var) == TextWrapper:
             return var.output()

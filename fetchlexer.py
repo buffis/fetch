@@ -1,7 +1,7 @@
 import ply.lex as lex
 
 reserved = {
-   'dict' : 'DICT',
+    'dict': 'DICT',
 }
 
 tokens = (
@@ -49,18 +49,22 @@ t_BANG      = r'!'
 t_OR        = r'\|'
 t_AND       = r'&'
 
+
 def t_NAME(t):
-    r'[a-zA-Z\-_]+' 
+    r'[a-zA-Z\-_]+'
     t.type = reserved.get(t.value,'NAME')
     return t
+
 
 def t_STRING(t):
     r"'[^']*'"
     return t
 
+
 def t_NUMBER(t):
     r'\d+'
     return t
+
 
 def t_newline(t):
     r'\n+'
@@ -68,15 +72,18 @@ def t_newline(t):
     t.type = "NEWLINE"
     return t
 
+
 def t_COMMENT(t):
     r'\#.*'
     pass
 
-t_ignore  = ' \t\r'
+t_ignore = ' \t\r'
+
 
 def t_error(t):
     print "Illegal character '%s'" % t.value[0]
     t.lexer.skip(1)
+
 
 def get_lexer():
     return lex.lex()

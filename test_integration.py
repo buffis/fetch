@@ -3,10 +3,11 @@ import fetchparser
 import unittest
 from requesthandler import TestRequestHandler
 
+
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         print "Testing: ", self
-        fetchinterpreter.VARS = {} # Clean up interpreter state.
+        fetchinterpreter.VARS = {}  # Clean up interpreter state.
 
     def test_fetch_filterlines_output(self):
         return_data = """Data from a API

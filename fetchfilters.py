@@ -3,14 +3,23 @@ import re
 # TODO: Add docstring explaining coarse/fine filters and modes.
 # TODO: Enforce validation.
 
+
 # Coarse text filters:
-def starts_filter(arg): return lambda x: x.startswith(arg)
+def starts_filter(arg):
+    return lambda x: x.startswith(arg)
 
-def ends_filter(arg): return lambda x: x.endswith(arg)
 
-def contains_filter(arg): return lambda x: arg in x
+def ends_filter(arg):
+    return lambda x: x.endswith(arg)
 
-def matches_filter(arg): return lambda x: re.compile(arg).match(x)
+
+def contains_filter(arg):
+    return lambda x: arg in x
+
+
+def matches_filter(arg):
+    return lambda x: re.compile(arg).match(x)
+
 
 def length_filter(arg):
     def t(x):
@@ -25,18 +34,29 @@ def length_filter(arg):
             return len(x) == int(tmp.groups()[0])
         print "Invalid input to length filter: ", arg
     return t
-    #TODO: Handle error
+    # TODO: Handle error
+
 
 # Fine text filters:
-def after_filter(arg): return lambda x: x[x.find(arg)+len(arg):] if arg in x else ''
+def after_filter(arg):
+    return lambda x: x[x.find(arg) + len(arg):] if arg in x else ''
 
-def before_filter(arg): return lambda x: x[:x.find(arg)] if arg in x else x
 
-def afterpos_filter(arg): return lambda x: x[int(arg):]
+def before_filter(arg):
+    return lambda x: x[:x.find(arg)] if arg in x else x
 
-def beforepos_filter(arg): return lambda x: x[:int(arg)]
 
-def exclude_filter(arg): return lambda x: x.replace(arg, '')
+def afterpos_filter(arg):
+    return lambda x: x[int(arg):]
+
+
+def beforepos_filter(arg):
+    return lambda x: x[:int(arg)]
+
+
+def exclude_filter(arg):
+    return lambda x: x.replace(arg, '')
+
 
 def striptags_filter(arg):
     def striptags(x, v):
@@ -48,8 +68,8 @@ def striptags_filter(arg):
         return subbed
     return lambda x: striptags(x, arg)
 
-# Coarse HTML filters:
 
+# Coarse HTML filters:
 def _match_tag(arg):
     """
     Helper method for "children" and "findall" filters, used to match a tag.
@@ -62,6 +82,7 @@ def _match_tag(arg):
         # No class specified. Just a tag.
         name = arg
         cls = None
+
     def f(x):
         if name:
             matching_name = x.name == name
@@ -77,20 +98,27 @@ def _match_tag(arg):
             return matching_name
     return f
 
+
 def children_filter(arg):
     f = _match_tag(arg)
     f.recursive = False
     return f
+
 
 def findall_filter(arg):
     f = _match_tag(arg)
     f.recursive = True
     return f
 
-# Fine HTML filters:
-def text_filter(_): return lambda x: x.getText()
 
-def rawtext_filter(_): return lambda x: str(x)
+# Fine HTML filters:
+def text_filter(_):
+    return lambda x: x.getText()
+
+
+def rawtext_filter(_):
+    return lambda x: str(x)
+
 
 def attr_filter(arg):
     def f(x):
@@ -99,4 +127,3 @@ def attr_filter(arg):
         except KeyError:
             return ""
     return f
-

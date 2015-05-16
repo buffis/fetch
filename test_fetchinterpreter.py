@@ -5,6 +5,7 @@ from BeautifulSoup import BeautifulSoup
 
 TEST_URL = "http://example.com/cool_api"
 
+
 class TestFunctions(unittest.TestCase):
     def setUp(self):
         print "Testing: ", self
@@ -31,7 +32,7 @@ class TestFunctions(unittest.TestCase):
             "hello hello",
             "world"
         ])
-        action = CoarseFilterAction("x", BasicFilterExpression("starts","hello"), "y")
+        action = CoarseFilterAction("x", BasicFilterExpression("starts", "hello"), "y")
         fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(2, len(output))
@@ -45,13 +46,12 @@ class TestFunctions(unittest.TestCase):
             "hello hello",
             "world"
         ])
-        action = CoarseFilterAction("x", BasicFilterExpression("ends","hello"), "y")
+        action = CoarseFilterAction("x", BasicFilterExpression("ends", "hello"), "y")
         fetchinterpreter.handle_line(action)
         output = fetchinterpreter.VARS["x"].output()
         self.assertEquals(2, len(output))
         self.assertTrue("world hello" in output)
         self.assertTrue("hello hello" in output)
-
 
     def test_filter_contains(self):
         fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper([
@@ -388,11 +388,11 @@ class TestFunctions(unittest.TestCase):
             fetchinterpreter.handle_line(action)
             self.fail("Expected failure")
         except fetchinterpreter.InterpreterException:
-            pass # Expected
+            pass  # Expected
 
     def test_assignment_dict(self):
         fetchinterpreter.VARS["y"] = fetchinterpreter.TextWrapper(["hello world"])
-        action = OutputAssignment("x", {"z" : "y"})
+        action = OutputAssignment("x", {"z": "y"})
         fetchinterpreter.handle_line(action)
         self.assertTrue("x" in fetchinterpreter.VARS)
         self.assertTrue("z" in fetchinterpreter.VARS["x"])

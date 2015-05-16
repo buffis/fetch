@@ -93,7 +93,7 @@ def compile_beforepos_filter(arg): return "x[:%s]" % arg.strip("'")
 def compile_exclude_filter(arg): return "x.replace(%s, '')" % arg
 def compile_striptags_filter(arg): return "striptags(x, %s)" % arg
 
-def compile_text_filter(arg): # TODO: FIX
+def compile_text_filter(_):  # TODO: FIX
     return "x"
 
 def compile_filter_expression(exp, filter_map):
@@ -149,10 +149,10 @@ def compile_outputassignment(action):
     return str(action.name) + "=" + compile_outputassignment_right(action.value)
 
 def compile_outputassignment_right(value):
-    if (type(value) == ListPlus):
+    if type(value) == ListPlus:
         return "%s + %s" % (compile_outputassignment_right(value.l1),
                             compile_outputassignment_right(value.l2))
-    if (type(value) == ListAt):
+    if type(value) == ListAt:
         return "%s.output()[%s]" % (value.l, value.at)
     if type(value)== dict:
         # TODO: Clean up.
