@@ -1,30 +1,31 @@
 #!/usr/bin/python
+from fetchutils import *
 import sys
 import fetchinterpreter
 import fetchparser
+
 
 def interpret(filename):
     try:
         compiled = fetchparser.parse_input(open(filename).read())
     except fetchparser.ParserError as e:
-        print "Error parsing input file:", e.msg
-        sys.exit(1)
+        exit_with_error("Error parsing input file: %s" % e.msg)
+
     try:
         for line in compiled:
             fetchinterpreter.handle_line(line)
     except fetchinterpreter.InterpreterException as e:
-        print "Error fetching data:", e.msg
-        sys.exit(1)
+        exit_with_error("Error fetching data: %s" % e.msg)
+
     try:
-        print fetchinterpreter.get_output()
+        log(fetchinterpreter.get_output())
     except fetchinterpreter.InterpreterException as e:
-        print "Error emitting output:", e.msg
-        sys.exit(1)
+        exit_with_error("Error emitting output: %s" % e.msg)
+
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        filename = sys.argv[1]
+    # TODO: Allow flag for changing mode. Make parsing args better.
+    if len(sys.argv) == 2:
+        interpret(sys.argv[1])
     else:
-        print "Fetch needs a filename as an argument."
-        sys.exit(1)
-    interpret(filename)
+        exit_with_error("Fetch needs a single filename as an argument.")
