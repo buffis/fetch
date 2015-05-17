@@ -73,7 +73,7 @@ def t_newline(t):
     return t
 
 
-def t_COMMENT(t):
+def t_COMMENT(_):
     r'\#.*'
     pass
 

@@ -1,15 +1,28 @@
 ~~~~Fetch style guide~~~~
 
 The Python in Fetch should comply with PEP 8, with the following modifications.
-- Number of newlines between methods/classes can be 0-2 depending on what looks nice.
-- One-liner functions does not require linebreak after colon.
-        Example:
-        def contains_filter(arg): return lambda x: arg in x
 
+- Multiple spaces before/after operators are allowed if it aligns the code "more readable"
+Example:
+coarse_filter_map = {
+    "starts":    (starts_filter, FILTER_MODE_TEXT),
+    "ends":      (ends_filter, FILTER_MODE_TEXT),
+    "contains":  (contains_filter, FILTER_MODE_TEXT),
+    "matches":   (matches_filter, FILTER_MODE_TEXT),
+    "length":    (length_filter, FILTER_MODE_TEXT),
+    "children":  (children_filter, FILTER_MODE_HTML),
+    "findall":   (findall_filter, FILTER_MODE_HTML),
+}
 
-These changes from PEP 8 are purely motivated by my own preference.
+- One-word comments may skip the leading space after the '#' characters, if the comment is meant as a "hashtag"
+  that can be grepped for later by tools.
+Example:
+def get_output(mode="json"):  #shittycode
+
+- For auto-generated code such as parsetab.py, no rules apply (since it's not really possible to control.
+
+- For PLY method naming, the rules don't apply since having names like def t_NUMBER(t) is the common pattern.
+
 Any code not complying to this style guide should be considered a bug and bug reports will be appreciated.
 
-NOTE: There's a bunch of violations currently. Cleanup sweep needed!
-
-- buffi
+- buffi 2015

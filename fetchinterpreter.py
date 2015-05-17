@@ -130,8 +130,6 @@ class UrlWrapper(object):
 
 VARS = {}
 
-######################## FETCH SECTION ########################
-
 
 def fetchaction(action):
     VARS[action.name] = UrlWrapper(action.method, action.url.strip("'"))
@@ -147,10 +145,6 @@ def modifyurlaction(action):
         raise InterpreterException("Invalid field: " + action.method)
     getattr(VARS[action.name], field)[action.key] = action.value.strip("'")
     
-###################### END FETCH SECTION ######################
-
-####################### FILTER SECTION ########################
-
 
 class FilterWrapper(object):
     def __init__(self, f, mode):
@@ -224,11 +218,6 @@ def finefilteraction(action):
     f = filter_expression(action.expression, fine_filter_map)
     VARS[action.name] = VARS[action.indata].map(f)
 
-##################### END FILTER SECTION #######################
-
-####################### OUTPUT SECTION #########################
-
-
 def outputassignment(action):
     if type(action.name) == str:
         VARS[action.name] = outputassignment_right(action.value)
@@ -252,8 +241,6 @@ def outputassignment_right(value):
         return VARS[value]
     else:
         raise InterpreterException("Unknown type: " + str(type(value)))
-
-##################### END OUTPUT SECTION #######################
 
 
 def handle_line(line):
