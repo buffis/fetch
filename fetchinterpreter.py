@@ -266,6 +266,8 @@ def get_output(mode="json"):  #shittycode
 
     def text_format(output, inline=False):  #shittycode
         if type(output) == list:
+            if len(output) == 1:
+                return text_format(output[0])
             if inline:
                 return "[%s]" % ", ".join(map(text_format, output))
             else:

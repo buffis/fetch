@@ -24,8 +24,8 @@ output = y
         data = fetchparser.parse_input(fetch_data)
         for line in data:
             fetchinterpreter.handle_line(line)
-        output = fetchinterpreter.get_output().output()
-        self.assertEquals(["th lin I want to ftch."], output)
+        output = fetchinterpreter.get_output(mode="text")
+        self.assertEquals("th lin I want to ftch.", output)
 
     def test_fetch_filter_html_output(self):
         return_data = """<html><head><title>Page title</title></head>
@@ -43,5 +43,5 @@ output = y
         data = fetchparser.parse_input(fetch_data)
         for line in data:
             fetchinterpreter.handle_line(line)
-        output = fetchinterpreter.get_output().output()
-        self.assertEquals(["Page title"], output)
+        output = fetchinterpreter.get_output(mode="text")
+        self.assertEquals("Page title", output)
