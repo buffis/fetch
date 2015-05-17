@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from fetchutils import *
+from fetchfilters import FilterException
 import sys
 import fetchinterpreter
 import fetchparser
@@ -16,6 +17,8 @@ def interpret(filename):
             fetchinterpreter.handle_line(line)
     except fetchinterpreter.InterpreterException as e:
         exit_with_error("Error fetching data: %s" % e.msg)
+    except FilterException as e:
+        exit_with_error("Error when filtering data: %s" % e.msg)
 
     try:
         log(fetchinterpreter.get_output())
