@@ -3,21 +3,21 @@
 The Python in Fetch should comply with PEP 8, with the following modifications.
 
 - Multiple spaces before/after operators are allowed if it aligns the code "more readable"
-Example:
-coarse_filter_map = {
-    "starts":    (starts_filter, FILTER_MODE_TEXT),
-    "ends":      (ends_filter, FILTER_MODE_TEXT),
-    "contains":  (contains_filter, FILTER_MODE_TEXT),
-    "matches":   (matches_filter, FILTER_MODE_TEXT),
-    "length":    (length_filter, FILTER_MODE_TEXT),
-    "children":  (children_filter, FILTER_MODE_HTML),
-    "findall":   (findall_filter, FILTER_MODE_HTML),
-}
+    Example:
+    coarse_filter_map = {
+        "starts":    (starts_filter, FILTER_MODE_TEXT),
+        "ends":      (ends_filter, FILTER_MODE_TEXT),
+        "contains":  (contains_filter, FILTER_MODE_TEXT),
+        "matches":   (matches_filter, FILTER_MODE_TEXT),
+        "length":    (length_filter, FILTER_MODE_TEXT),
+        "children":  (children_filter, FILTER_MODE_HTML),
+        "findall":   (findall_filter, FILTER_MODE_HTML),
+    }
 
 - One-word comments may skip the leading space after the '#' characters, if the comment is meant as a "hashtag"
   that can be grepped for later by tools.
-Example:
-def get_output(mode="json"):  #shittycode
+    Example:
+    def get_output(mode="json"):  #shittycode
 
 - For auto-generated code such as parsetab.py, no rules apply (since it's not really possible to control.
 
