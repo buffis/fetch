@@ -92,7 +92,7 @@ NOTE: Fetch has not yet been test on Python 3. Instructions are for 2.7, but any
 
 ####Download
 
-The latest version of Fetch is 0.0.1, available as a [ZIP archive here](https://github.com/buffis/fetch/archive/master.zip).
+The latest version of Fetch is available as a [ZIP archive here](https://github.com/buffis/fetch/archive/master.zip).
 
 ... or you could instead just clone this git repository by running:
 
