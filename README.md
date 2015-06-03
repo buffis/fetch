@@ -27,7 +27,7 @@ Program execution is performed in (up to) four steps:
   * Output is normally JSON, but can be output in other formats (set by flags to the executable)
   * For simple outputs, just assigning a variable “output” is sufficient.
 
-A more in-depth walkthrough of the Fetch language is available in this document [“Fetch in-depth description”](https://docs.google.com/document/d/1WpeY3Jghhc4FP_nSlF0BK-x2GExgfGtLpOMu-eVUsuI/edit?usp=sharing). This document covers examples of all different fetch methods, filters and output options. The grammar of the Fetch language is also present here.
+A more in-depth walkthrough of the Fetch language is available in this document [“Fetch in-depth description”](https://docs.google.com/document/d/1WpeY3Jghhc4FP_nSlF0BK-x2GExgfGtLpOMu-eVUsuI/edit?usp=sharing). This document covers examples of all different fetch methods, filters and output options. The grammar of the Fetch language is also [present here](https://github.com/buffis/fetch/blob/master/docs/GRAMMAR).
 
 A short guide for installing and running Fetch programs are available in the section “Installing and running Fetch” further below.
 
@@ -129,3 +129,11 @@ python fetch.py sample/github_buffis_repoinfo.fetch
 I haven’t actually tried this on OSX, but installation should be similar to Windows.
 
 Install Python, install deps through PIP, run.
+
+#Development, License, State of things
+
+Fetch is currently in active development, and **the syntax and features of the language may change at any time**.
+
+Fetch is developed by Björn Kempén (buffi). External code contributions, bug reports and feature requests will be appreciated.
+
+It is available under the MIT License.
