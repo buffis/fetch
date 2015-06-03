@@ -130,7 +130,7 @@ I haven’t actually tried this on OSX, but installation should be similar to Wi
 
 Install Python, install deps through PIP, run.
 
-#Development, License, State of things
+##Other information
 
 Fetch is currently in active development, and **the syntax and features of the language may change at any time**.
 
